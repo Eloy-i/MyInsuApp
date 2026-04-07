@@ -4,8 +4,8 @@ public enum TipoDiabetes {
 
     //TODO añadir descripción o nombre formateado a cada elemento.
 
-    TIPO1,
-    TIPO2,
+    TIPO_1,
+    TIPO_2,
     GESTACIONAL,
     LADA;
 

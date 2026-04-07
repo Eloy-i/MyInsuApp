@@ -3,19 +3,32 @@ package org.example.myinsuapp.model;
 import java.time.LocalDate;
 
 public class PlumaInsulina {
-    private int idPluma, depositoInicial;
-   //TODO pensar si añadir Usuario usuario (lo normal hasta ahora) o int idUsuario;
+    private int idPluma;
+    private double depositoInicial;
+    private Usuario usuario;
     private boolean activo;
-    LocalDate fechaApertura;
+    private LocalDate fechaApertura;
 
-    //TODO montar constructor mientras pienso como meter al usuario
+    public PlumaInsulina(){}
+
+    public PlumaInsulina(int idPluma, double depositoInicial, Usuario usuario, boolean activo, LocalDate fechaApertura){
+        this.idPluma = idPluma;
+        this.depositoInicial = depositoInicial;
+        this.usuario = usuario;
+        this.activo = activo; //hacerlo true por defecto o es innecesario este dato en java
+        this.fechaApertura = fechaApertura;
+    }
 
 
     public int getIdPluma() {
         return idPluma;
     }
 
-    public int getDepositoInicial() {
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public double getDepositoInicial() {
         return depositoInicial;
     }
 
@@ -29,6 +42,10 @@ public class PlumaInsulina {
 
     public void setIdPluma(int idPluma) {
         this.idPluma = idPluma;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public void setDepositoInicial(int depositoInicial) {
