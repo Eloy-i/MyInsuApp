@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -11,7 +12,10 @@
 
 <AnchorPane fx:id="inicio_anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button fx:id="btnIniciarPluma" layoutX="122.0" layoutY="104.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="99.0" text="Iniciar Pluma" />
+      <Button fx:id="btnIniciarPluma" layoutX="122.0" layoutY="104.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="99.0" text="Iniciar Pluma">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
       <HBox alignment="CENTER_LEFT" layoutX="261.0" layoutY="4.0" prefHeight="47.0" prefWidth="160.0" spacing="10.0">
          <children>
             <Label prefHeight="28.0" prefWidth="50.0" text="Usuario:" />
