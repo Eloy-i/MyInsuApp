@@ -1,21 +1,33 @@
 package org.example.myinsuapp.model;
-
 import java.time.LocalDate;
+
+/*
+ MVP Fase 1: Entidad base para la gestión de plumas de insulina.
+
+ Escalabilidad futura, de cara a llevar este proyecto a segundo:
+
+ Esta clase está diseñada con la previsión de evolucionar a una clase Abstracta.
+ El objetivo futuro es aplicar herencia para crear subtipos específicos
+ (InsulinaLenta, InsulinaRapida, InsulinaSemanal). Todos compartirán este patrón
+ de datos común, pero permitirán métodos con comportamientos
+ propios
+  */
 
 public class PlumaInsulina {
     private int idPluma;
-    private double depositoInicial;
+    private int depositoInicial;
     private Usuario usuario;
     private boolean activo;
     private LocalDate fechaApertura;
 
     public PlumaInsulina(){}
 
-    public PlumaInsulina(int idPluma, double depositoInicial, Usuario usuario, boolean activo, LocalDate fechaApertura){
+    //TODO-> Repaso de constructores -> Constructor sin idInyeccion porque lo gestiona la BD con AutoIncrement?
+    public PlumaInsulina(int idPluma, int depositoInicial, Usuario usuario, boolean activo, LocalDate fechaApertura){
         this.idPluma = idPluma;
         this.depositoInicial = depositoInicial;
         this.usuario = usuario;
-        this.activo = activo; //hacerlo true por defecto o es innecesario este dato en java
+        this.activo = activo;
         this.fechaApertura = fechaApertura;
     }
 
@@ -28,7 +40,7 @@ public class PlumaInsulina {
         return usuario;
     }
 
-    public double getDepositoInicial() {
+    public int getDepositoInicial() {
         return depositoInicial;
     }
 

@@ -2,11 +2,19 @@ package org.example.myinsuapp.model;
 
 public enum TipoDiabetes {
 
-    //TODO añadir descripción o nombre formateado a cada elemento.
+    TIPO_1("Tipo 1"),
+    TIPO_2("Tipo 2"),
+    GESTACIONAL("Gestacional"),
+    LADA("LADA");
 
-    TIPO_1,
-    TIPO_2,
-    GESTACIONAL,
-    LADA;
+    private final  String nombreVisual;
 
+    TipoDiabetes(String nombreVisual){
+        this.nombreVisual = nombreVisual;
+    }
+
+    @Override
+    public String toString() {
+        return nombreVisual;
+    }
 }

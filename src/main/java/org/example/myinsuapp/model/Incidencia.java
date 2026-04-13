@@ -5,6 +5,7 @@ public class Incidencia {
     private Inyeccion inyeccionIncidencia;
     private TipoIncidencia tipoIncidencia;
 
+    //TODO-> Repaso de constructores -> Constructor sin idInyeccion porque lo gestiona la BD con AutoIncrement?
     public Incidencia(int idIncidencia, Inyeccion inyeccionIncidencia, TipoIncidencia tIncidencia){
         this.idIncidencia = idIncidencia;
         this.inyeccionIncidencia = inyeccionIncidencia;

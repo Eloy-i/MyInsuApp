@@ -9,6 +9,7 @@ public class Inyeccion {
     private double dosis;
     private LocalDateTime horaInyeccion;
 
+    //TODO-> Repaso de constructores -> Constructor sin idInyeccion porque lo gestiona la BD con AutoIncrement?
     public Inyeccion(int idInyeccion, PlumaInsulina plumaInsulina, Zona zona, double dosis, LocalDateTime horaInyeccion) {
         this.idInyeccion = idInyeccion;
         this.plumaInsulina = plumaInsulina;

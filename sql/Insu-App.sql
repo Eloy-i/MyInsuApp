@@ -30,6 +30,11 @@ CREATE TABLE Usuario(
 Tabla: Pluma_Insulina
 Relación: 1:N con Usuario.
 Uso On Delete Restrict para proteger el historial y no poder borrar a un usuario con Plumas registradas.
+
+Justificación de diseño para 'deposito_inicial' (INT) y 'activo' (BOOLEAN):
+
+ 1. deposito_inicial (INT): Las plumas tienen un volumen de fábrica exacto y entero (ej. 300 uds). Este dato se usará en la capa Java para ofrecer una estimación visual del uso. No se diseña como un sistema de "stock" en base de datos porque la insulina sufre perdidas inevitables (purgas al cebar o fugas). Una resta estricta en SQL generaría datos clínicos falsos.
+ 2. activo (BOOLEAN): Gestiona el ciclo de vida de la pluma sin romper la normalización. El cambio a una pluma nueva se delega a la confirmación real del usuario, evitando automatizar un reemplazo basado en cálculos imprecisos.
 */
 
 CREATE TABLE Pluma_Insulina(
@@ -65,7 +70,7 @@ CREATE TABLE Zona(
 /*
 Tabla: Inyeccion -> Principal fuente de información y relación entre tablas.
 Relación 1:N con Zona y Pluma.
-Aunque la lógica de dosis la llevaré de forma estricta en JAVA, añado una capa extra de seguridad con Check que asegura el comportamiento real de la pluma:
+Aunque la lógica de dosis la llevaré de forma estricta en JAVA, añado una capa extra de seguridad con Check que asegura el comportamiento real de cada inyección:
     - Dosis superiores a 0 y con un max de 30.
     - En incrementos de 0.5.
 */
@@ -258,3 +263,162 @@ VALUES (1, 4, 0, '2026-04-14 10:00:00');
 INSERT INTO Zona (zona_cuerpo) 
 VALUES ('abdomen izquierdo');
 -- Resultado: #1062 - Entrada duplicada 'abdomen izquierdo' para la clave 'zona_cuerpo'
+
+
+/*
+QUERYS... 
+
+*/
+-- ---------------------------------------------------------------
+-- Consultas para la vista informe con rango diarío y de 7 días.
+-- ---------------------------------------------------------------
+
+-- -------
+-- Dosis total en periodo
+
+-- Diario -> Sufrí con esta comparación debido a las "horas y minutos" con DATE() he podido comparar fechas directamente.
+
+SELECT SUM(i.dosis) AS total_dosis
+FROM inyeccion i 
+WHERE DATE(i.fecha_hora) = CURDATE();
+
+-- Dosis total de los últimos 7 días completos
+
+SELECT SUM(i.dosis) AS total_dosis_semana
+FROM inyeccion i 
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+
+-- Promedio dosis por día
+
+SELECT SUM(i.dosis) / 7 AS promedio_diario
+FROM inyeccion i 
+WHERE DATE(i.fecha_hora) >= DATE_SUB(curdate(), INTERVAL 7 DAY);
+
+-- Numero de veces pinchado en el día
+
+SELECT COUNT(i.dosis) AS numero_inyecciones
+FROM inyeccion i
+WHERE DATE(i.fecha_hora) = CURDATE();
+
+-- Númro de veces pinchados en la semana
+
+SELECT COUNT(i.dosis) AS total_inyecciones_semana
+FROM inyeccion i 
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+
+-- Frecuencia medía de inyecciones diarias a la semana 
+
+SELECT COUNT(i.dosis) / 7 AS frecuencia_inyecciones_diarias
+FROM inyeccion i 
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+
+-- Pico maximo de unidades de insulina en una inyección día
+
+SELECT MAX(i.dosis) AS pico_max
+FROM inyeccion i
+WHERE DATE(i.fecha_hora) = CURDATE();
+
+-- Pico max unidades insulina en el rango de 7 días
+
+SELECT MAX(i.dosis) AS pico_max
+FROM inyeccion i
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+
+-- Zona mas usada y total de inyecciones día
+
+SELECT z.zona_cuerpo AS zona_mas_usada,
+COUNT(i.id_inyeccion) AS total_inyecciones
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+GROUP BY z.zona_cuerpo
+ORDER BY total_inyecciones DESC
+LIMIT 1;
+
+-- Zona mas usada y total de inyecciones en 7 días
+
+SELECT z.zona_cuerpo AS zona_mas_usada,
+COUNT(i.id_inyeccion) AS total_inyecciones
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+WHERE DATE(i.fecha_hora) = CURDATE()
+GROUP BY z.zona_cuerpo
+ORDER BY total_inyecciones DESC
+LIMIT 1;
+ 
+-- Zona con mas incidencias en el día
+
+SELECT z.zona_cuerpo AS zona_mas_problematica,
+COUNT(inc.id_incidencia) AS total_incidencias
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+INNER JOIN incidencia inc
+ON inc.id_inyeccion = i.id_inyeccion
+WHERE DATE(i.fecha_hora) = CURDATE()
+GROUP BY z.zona_cuerpo
+ORDER BY total_incidencias DESC
+LIMIT 1;
+
+-- Zona con mayor incidencias y total de ellas en 7 días
+SELECT z.zona_cuerpo AS zona_mas_problematica,
+COUNT(inc.id_incidencia) AS total_incidencias
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+INNER JOIN incidencia inc
+ON inc.id_inyeccion = i.id_inyeccion
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+GROUP BY z.zona_cuerpo
+ORDER BY total_incidencias DESC
+LIMIT 1;
+
+-- Datos para el graficod e quesitos. 
+
+-- Uso de zonas en el día
+
+SELECT z.zona_cuerpo AS zonas_cuerpo,
+COUNT(i.id_inyeccion) AS total_inyecciones
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+WHERE DATE(i.fecha_hora) = CURDATE()
+GROUP BY z.zona_cuerpo
+ORDER BY total_inyecciones DESC;
+
+
+-- Uso de zonas en el rango
+
+SELECT z.zona_cuerpo AS zonas_cuerpo,
+COUNT(i.id_inyeccion) AS total_inyecciones
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+GROUP BY z.zona_cuerpo
+ORDER BY total_inyecciones DESC;
+
+
+-- Busqueda para el chart de Incidencias por zona y tipo de incidencias en cada zona (semana)
+
+SELECT z.zona_cuerpo AS zonas_cuerpo,
+	inc.tipo_incidencia,
+	COUNT(inc.id_incidencia) AS total_incidencias
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+INNER JOIN incidencia inc
+ON inc.id_inyeccion = i.id_inyeccion
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+GROUP BY z.zona_cuerpo, inc.tipo_incidencia
+ORDER BY z.zona_cuerpo, total_incidencias DESC;
+
+
+-- ---------
+-- Inicio
+-- --------
+
+-- Consulta última inyeccion para la vista rápida
+
