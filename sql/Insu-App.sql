@@ -267,7 +267,7 @@ VALUES ('abdomen izquierdo');
 
 /*
 QUERYS... 
-
+TODO todas las consultas están preparadas para probar en phpMyAdmin... Falta modificar detalles como los intervalos curdate() que lo reciban como parametro desde java... Esperando a la clase que nos enseñe a unir BD con JAVA y que esto se de. 
 */
 -- ---------------------------------------------------------------
 -- Consultas para la vista informe con rango diarío y de 7 días.
@@ -421,4 +421,34 @@ ORDER BY z.zona_cuerpo, total_incidencias DESC;
 -- --------
 
 -- Consulta última inyeccion para la vista rápida
+
+SELECT i.dosis, i.fecha_hora, z.zona_cuerpo
+FROM pluma_insulina pl
+INNER JOIN inyeccion i
+ON pl.id_plumaInsulina = i.id_plumaInsulina
+INNER JOIN zona z
+ON z.id_zona = i.id_zona
+WHERE pl.activo = 1
+ORDER BY i.fecha_hora DESC
+LIMIT 1;
+
+-- 
+-- TODO Cantidad de dosis usadas de la pluma? SQL o Calculo en java... decidir al final.
+
+
+-- -------------------------------------------
+-- Busqueda para el historial de inyecciones
+-- -------------------------------------------
+
+-- Buscamos fecha, hora, unidades, zona y incidencia (haya o no)-> Left Join
+
+
+SELECT i.fecha_hora, i.dosis, z.zona_cuerpo, inc.tipo_incidencia
+FROM inyeccion i
+LEFT JOIN incidencia inc
+ON i.id_inyeccion = inc.id_inyeccion
+INNER JOIN zona z
+ON z.id_zona = i.id_zona
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+ORDER BY i.fecha_hora DESC;
 
