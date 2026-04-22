@@ -22,7 +22,15 @@ public class PlumaInsulina {
 
     public PlumaInsulina(){}
 
-    //TODO-> Repaso de constructores -> Constructor sin idInyeccion porque lo gestiona la BD con AutoIncrement?
+    //Constructor para Inserts
+    public PlumaInsulina(int depositoInicial, Usuario usuario, boolean activo, LocalDate fechaApertura){
+        this.depositoInicial = depositoInicial;
+        this.usuario = usuario;
+        this.activo = activo;
+        this.fechaApertura = fechaApertura;
+    }
+
+    //Constructor para Select
     public PlumaInsulina(int idPluma, int depositoInicial, Usuario usuario, boolean activo, LocalDate fechaApertura){
         this.idPluma = idPluma;
         this.depositoInicial = depositoInicial;
