@@ -11,7 +11,7 @@ public class DBConnection {
     //TODO lanzar excepcion o capturar -> Borja comenta que si no se puede resolver por quien sa la app mejor capturar aquí.
 
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() {
         if (connection == null){
             newConnection();
         }
@@ -30,7 +30,7 @@ public class DBConnection {
         try {
             connection = DriverManager.getConnection(urlJDBC, user,pass);
         } catch (SQLException e){
-            //TODO -> Ver como mandarl a a la vista y que decirle en caso de error.
+             throw new RuntimeException(); //todo preparar excepciones para un ALERT en javafx
         }
 
 
