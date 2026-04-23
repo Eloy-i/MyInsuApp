@@ -9,15 +9,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ZonaDAO {
     private Connection connection;
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
 
-    public List<Zona> getZonas(){
-        List<Zona> zonas = new ArrayList<>();
+    public Map<Integer, Zona> getZonas(){
+        Map<Integer, Zona> mapaZonas = new HashMap<>();
         connection = DBConnection.getConnection();
         String query = "SELECT * FROM "+ DBSchem.TAB_ZONA;
 
@@ -28,11 +30,11 @@ public class ZonaDAO {
             while (resultSet.next()){
                 int id = resultSet.getInt(DBSchem.COL_ZONA_ID);
                 String nombreZona = resultSet.getString(DBSchem.COL_ZONA_NOMBRE);
-                zonas.add(new Zona(id, nombreZona));
+                mapaZonas.put(id, new Zona(id, nombreZona));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return zonas;
+        return mapaZonas;
     }
 }

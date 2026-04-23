@@ -452,3 +452,18 @@ ON z.id_zona = i.id_zona
 WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
 ORDER BY i.fecha_hora DESC;
 
+-- Reformulada para Java -> Necesito extraer todos los datos para formar el objeto y pasarselo a un TableView en JavaFX
+
+SELECT 
+    i.id_inyeccion, i.fecha_hora, i.dosis, 
+    z.id_zona, z.zona_cuerpo, 
+    inc.id_incidencia, inc.tipo_incidencia
+FROM inyeccion i
+LEFT JOIN incidencia inc
+ON i.id_inyeccion = inc.id_inyeccion
+INNER JOIN zona z
+ON z.id_zona = i.id_zona
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+ORDER BY i.fecha_hora DESC;
+
+

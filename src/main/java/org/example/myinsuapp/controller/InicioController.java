@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
+import org.example.myinsuapp.service.EstadoService;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -46,7 +47,7 @@ public class InicioController implements Initializable {
     }
 
     private void instances() {
-
+        EstadoService.getInstance();
     }
 
     private void initGUI() {

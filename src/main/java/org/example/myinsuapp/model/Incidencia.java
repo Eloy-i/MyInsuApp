@@ -15,6 +15,16 @@ public class Incidencia {
         this.tipoIncidencia = tipoIncidencia;
     }
 
+    /*
+    Mientras creaba la tabla informe he necesitado pasar Incidencia como Objeto a Inyeccion porque como objeto es comporta de forma
+    natural mejor así... Esto me lleva a una redundancia aquí en java al tener Inyeccion aquí dentro
+    TODO probar el constructor sin Inyeccion si va bien quitar el objeto de la clase.
+     */
+    public Incidencia(int idIncidencia, TipoIncidencia tipo){
+        this.idIncidencia = idIncidencia;
+        this.tipoIncidencia = tipo;
+    }
+
     public int getIdIncidencia() {
         return idIncidencia;
     }

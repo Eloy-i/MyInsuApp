@@ -1,4 +1,4 @@
 package org.example.myinsuapp.service;
 
-public class InformeManager {
+public class InformeService {
 }

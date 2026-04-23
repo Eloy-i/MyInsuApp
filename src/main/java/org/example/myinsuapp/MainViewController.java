@@ -5,9 +5,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import org.example.myinsuapp.service.EstadoService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
@@ -40,6 +42,7 @@ public class MainViewController implements Initializable {
 
     private void instances() {
         try {
+            EstadoService.getInstance().cargaInicial();
             inicioView = FXMLLoader.load(MainViewController.class.getResource("inicio-view.fxml"));
             registroView = FXMLLoader.load(MainViewController.class.getResource("registroPrueba2_view.fxml"));
             historicoView = FXMLLoader.load(MainViewController.class.getResource("historico-view.fxml"));
@@ -47,8 +50,9 @@ public class MainViewController implements Initializable {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
 
     }
 
