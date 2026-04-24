@@ -1,11 +1,11 @@
 package org.example.myinsuapp.dao;
-/*
 import org.example.myinsuapp.database.DBConnection;
 import org.example.myinsuapp.database.DBSchem;
 import org.example.myinsuapp.model.Incidencia;
 import org.example.myinsuapp.model.Inyeccion;
 import org.example.myinsuapp.model.TipoIncidencia;
 import org.example.myinsuapp.model.Zona;
+import org.example.myinsuapp.service.EstadoService;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -32,6 +32,19 @@ public class InyeccionDAO {
         preparedStatement.setObject(4, inyeccion.getHoraInyeccion());
         preparedStatement.executeUpdate();
 
+    }
+
+    public double getTotalDosisPorPluma(int idPluma) throws SQLException {
+        connection = DBConnection.getConnection();
+        String query = "SELECT SUM(dosis) FROM inyeccion WHERE id_plumaInsulina = ?";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, idPluma);
+        resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()){
+            return resultSet.getDouble(1);
+        }
+        return 0;
     }
 
 
@@ -66,18 +79,45 @@ public class InyeccionDAO {
             int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
             LocalDateTime fechaHora = resultSet.getObject(DBSchem.COL_INY_FECHA, LocalDateTime.class);
             double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
-            // necesito un map que me de la zona por id, crearla nueva cada vez es una chorrada
+            int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
             int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
             Incidencia incidencia = null;
             if (idIncidencia > 0){
                 TipoIncidencia tipoIncidencia = TipoIncidencia.valueOf(resultSet.getString(DBSchem.COL_INC_TIPO));
                 incidencia = new Incidencia(idIncidencia, tipoIncidencia);
             }
-
-            Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, (zona), incidencia);
+            Zona zona = EstadoService.getInstance().getZonaByID(idZona);
+            Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, zona, incidencia);
             inyecciones.add(inyeccion);
         }
         return inyecciones;
+    }
+
+    public Inyeccion getUltimaInyeccion(int idPluma) throws SQLException {
+        Inyeccion inyeccion = null;
+        connection = DBConnection.getConnection();
+        String query = """
+                SELECT i.dosis, i.fecha_hora, z.id_zona
+                FROM inyeccion i
+                INNER JOIN zona z ON z.id_zona = i.id_zona
+                WHERE i.id_plumaInsulina = ?
+                ORDER BY i.fecha_hora DESC
+                LIMIT 1""";
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, idPluma);
+        resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()){
+            double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
+            LocalDateTime localDateTime = (LocalDateTime) resultSet.getObject(DBSchem.COL_INY_FECHA);
+            int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
+            Zona zona = EstadoService.getInstance().getZonaByID(idZona);
+            inyeccion = new Inyeccion(dosis, localDateTime, zona);
+
+        }
+
+        return inyeccion;
+
     }
 
     /*
@@ -101,8 +141,5 @@ public class InyeccionDAO {
                         DBSchem.COL_INY_FECHA,
                DBSchem.COL_INY_FECHA);
      */
-/*
 }
 
-
- */

@@ -59,6 +59,15 @@ public class EstadoService {
         return mapaZonas.get(id);
     }
 
+    public Map<Integer, Zona> getMapaZonas() {
+        return mapaZonas;
+    }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
+    public PlumaInsulina getPlumaActiva() {
+        return plumaActiva;
+    }
 }

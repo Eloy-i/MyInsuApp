@@ -36,7 +36,7 @@ public class Inyeccion {
         this.incidencia = incidencia;
     }
 
-    // Este constructo no incluye la pluma... Se usa pata el select del tableview que permite además aplicar la operación DELETE
+    // Este constructor no incluye la pluma... Se usa pata el select del tableview que permite además aplicar la operación DELETE
     public Inyeccion(int idInyeccion, double dosis, LocalDateTime horaInyeccion, Zona zona, Incidencia incidencia) {
         this.idInyeccion = idInyeccion;
         this.dosis = dosis;
@@ -44,6 +44,12 @@ public class Inyeccion {
         this.zona = zona;
         this.incidencia = incidencia;
         this.plumaInsulina = null;
+    }
+    //Constructor simple para muestra de datos en la vista principal
+    public Inyeccion (double dosis, LocalDateTime horaInyeccion, Zona zona){
+        this.dosis = dosis;
+        this.horaInyeccion = horaInyeccion;
+        this.zona = zona;
     }
 
 
