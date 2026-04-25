@@ -21,7 +21,7 @@ public class IncidenciaDAO {
                 DBSchem.TAB_INCIDENCIA, DBSchem.COL_INC_INY, DBSchem.COL_INC_TIPO);
         preparedStatement = connection.prepareStatement(query);
 
-        preparedStatement.setInt(1, incidencia.getInyeccionIncidencia().getIdInyeccion());
+        preparedStatement.setInt(1, incidencia.getIdInyeccion());
         preparedStatement.setString(2, String.valueOf(incidencia.getTipoIncidencia()));
         preparedStatement.executeUpdate();
     }

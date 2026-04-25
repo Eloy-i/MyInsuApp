@@ -24,13 +24,19 @@ public class InyeccionDAO {
         String query = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?);",
                 DBSchem.TAB_INYECCION, DBSchem.COL_INY_PLUMA, DBSchem.COL_ZONA_ID,
                 DBSchem.COL_INY_DOSIS, DBSchem.COL_INY_FECHA);
-        preparedStatement = connection.prepareStatement(query);
+
+        preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
         preparedStatement.setInt(1, inyeccion.getPlumaInsulina().getIdPluma());
         preparedStatement.setInt(2, inyeccion.getZona().getIdZona());
         preparedStatement.setDouble(3, inyeccion.getDosis());
         preparedStatement.setObject(4, inyeccion.getHoraInyeccion());
         preparedStatement.executeUpdate();
+        resultSet = preparedStatement.getGeneratedKeys();
+        if (resultSet.next()){
+            inyeccion.setIdInyeccion(resultSet.getInt(1));
+        }
+
 
     }
 

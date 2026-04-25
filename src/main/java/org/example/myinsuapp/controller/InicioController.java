@@ -53,7 +53,7 @@ public class InicioController implements Initializable {
     }
 
     private void instances() {
-        EstadoService.getInstance();
+
         inyeccionService = new InyeccionService();
     }
 

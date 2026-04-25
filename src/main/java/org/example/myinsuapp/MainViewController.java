@@ -44,7 +44,7 @@ public class MainViewController implements Initializable {
         try {
             EstadoService.getInstance().cargaInicial();
             inicioView = FXMLLoader.load(MainViewController.class.getResource("inicio-view.fxml"));
-            registroView = FXMLLoader.load(MainViewController.class.getResource("registroPrueba2_view.fxml"));
+            registroView = FXMLLoader.load(MainViewController.class.getResource("registro-view.fxml"));
             historicoView = FXMLLoader.load(MainViewController.class.getResource("historico-view.fxml"));
             informeView = FXMLLoader.load(MainViewController.class.getResource("informe-view.fxml"));
 

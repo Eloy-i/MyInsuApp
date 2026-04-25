@@ -2,11 +2,17 @@ package org.example.myinsuapp.model;
 
 public class Incidencia {
     private int idIncidencia;
+    private int idInyeccion;
     private Inyeccion inyeccionIncidencia;
     private TipoIncidencia tipoIncidencia;
 
     public Incidencia (Inyeccion inyeccionIncidencia, TipoIncidencia tipoIncidencia){
         this.inyeccionIncidencia = inyeccionIncidencia;
+        this.tipoIncidencia = tipoIncidencia;
+    }
+
+    public Incidencia(int idInyeccion, TipoIncidencia tipoIncidencia){
+        this.idInyeccion = idInyeccion;
         this.tipoIncidencia = tipoIncidencia;
     }
     public Incidencia(int idIncidencia, Inyeccion inyeccionIncidencia, TipoIncidencia tipoIncidencia){
@@ -15,14 +21,8 @@ public class Incidencia {
         this.tipoIncidencia = tipoIncidencia;
     }
 
-    /*
-    Mientras creaba la tabla informe he necesitado pasar Incidencia como Objeto a Inyeccion porque como objeto es comporta de forma
-    natural mejor así... Esto me lleva a una redundancia aquí en java al tener Inyeccion aquí dentro
-    TODO probar el constructor sin Inyeccion si va bien quitar el objeto de la clase.
-     */
-    public Incidencia(int idIncidencia, TipoIncidencia tipo){
-        this.idIncidencia = idIncidencia;
-        this.tipoIncidencia = tipo;
+    public int getIdInyeccion() {
+        return idInyeccion;
     }
 
     public int getIdIncidencia() {
@@ -35,6 +35,10 @@ public class Incidencia {
 
     public TipoIncidencia getTipoIncidencia() {
         return tipoIncidencia;
+    }
+
+    public void setIdInyeccion(int idInyeccion) {
+        this.idInyeccion = idInyeccion;
     }
 
     public void setIdIncidencia(int idIncidencia) {
