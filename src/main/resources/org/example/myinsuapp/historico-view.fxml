@@ -14,9 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-      prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-fx:controller="org.example.myinsuapp.controller.HistoricoController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.myinsuapp.controller.HistoricoController">
    <children>
       <VBox alignment="CENTER" prefHeight="36.0" prefWidth="600.0">
          <children>
@@ -37,19 +35,19 @@ fx:controller="org.example.myinsuapp.controller.HistoricoController">
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" text="Ver" GridPane.columnIndex="2">
+            <Button fx:id="btnVerHistorial" mnemonicParsing="false" prefHeight="25.0" prefWidth="91.0" text="Ver" GridPane.columnIndex="2">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.halignment="CENTER">
                <children>
                   <Label text="Rango" />
-                  <ComboBox prefHeight="25.0" prefWidth="117.0" />
+                  <ComboBox fx:id="comboRango" prefHeight="25.0" prefWidth="117.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
                <children>
-                  <RadioButton fx:id="incidenciaButton" mnemonicParsing="false" text="Solo Incidencias" />
+                  <RadioButton fx:id="incidenciaCheck" mnemonicParsing="false" text="Solo Incidencias" />
                </children>
             </HBox>
          </children>

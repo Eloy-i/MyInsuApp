@@ -7,6 +7,7 @@ import org.example.myinsuapp.model.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class InyeccionService {
 
@@ -94,6 +95,22 @@ public class InyeccionService {
             throw new RuntimeException("Los datos indican no queda suficiente insulina, inicia una nueva pluma.");
         }
 
+    }
+
+    public List<Inyeccion> listaInyecciones(int dias) {
+        try {
+            return inyeccionDAO.getInyeccionesRango(dias);
+        } catch (SQLException e) {
+            throw new RuntimeException(e); //capturar o lanzar personalizada?
+        }
+    }
+
+    public List<Inyeccion> listaInyeccionesConIncidencia(int dias) {
+        try {
+            return inyeccionDAO.getInyeccionesIncidenciaRango(dias);
+        } catch (SQLException e) {
+            throw new RuntimeException(e); //capturar o lanzar personalizada?
+        }
     }
 
 

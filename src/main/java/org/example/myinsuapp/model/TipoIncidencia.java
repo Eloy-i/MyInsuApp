@@ -5,7 +5,7 @@ public enum TipoIncidencia {
     BOLA_INSULINA("bola insulina"),
     DOLOR_AGUDO("dolor agudo");
 
-    private String nombreVisual;
+    private final String nombreVisual;
 
     TipoIncidencia(String nombreVisual){
         this.nombreVisual = nombreVisual;
@@ -13,4 +13,13 @@ public enum TipoIncidencia {
 
     @Override
     public String toString() { return nombreVisual; }
+
+    public static TipoIncidencia desdeBD(String texto) {
+        for (TipoIncidencia tipo : TipoIncidencia.values()) {
+            if (tipo.nombreVisual.equalsIgnoreCase(texto)) {
+                return tipo;
+            }
+        }
+        return null; // O lanzar excepción
+    }
 }

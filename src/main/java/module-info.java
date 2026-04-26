@@ -8,4 +8,6 @@ module org.example.myinsuapp {
     exports org.example.myinsuapp;
     opens org.example.myinsuapp.controller to javafx.fxml;
     exports org.example.myinsuapp.controller;
+    opens org.example.myinsuapp.model to javafx.base;
+    exports org.example.myinsuapp.model;
 }

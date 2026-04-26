@@ -18,7 +18,7 @@ public class InyeccionDAO {
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
 
-    //TODO Si la inyección tiene incidencia, necesito obtener la ID que se ha generado... Revisar como.
+    //TODO Revisar si puedo hacer esta operación como parte de una transacción
     public void insertInyeccion(Inyeccion inyeccion) throws SQLException {
         connection = DBConnection.getConnection();
         String query = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?);",
@@ -80,6 +80,7 @@ public class InyeccionDAO {
 
         preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, dias);
+        resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()){
             int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
@@ -88,8 +89,8 @@ public class InyeccionDAO {
             int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
             int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
             Incidencia incidencia = null;
-            if (idIncidencia > 0){
-                TipoIncidencia tipoIncidencia = TipoIncidencia.valueOf(resultSet.getString(DBSchem.COL_INC_TIPO));
+            if (!resultSet.wasNull()){
+                TipoIncidencia tipoIncidencia = TipoIncidencia.desdeBD(resultSet.getString(DBSchem.COL_INC_TIPO));
                 incidencia = new Incidencia(idIncidencia, tipoIncidencia);
             }
             Zona zona = EstadoService.getInstance().getZonaByID(idZona);
@@ -97,6 +98,41 @@ public class InyeccionDAO {
             inyecciones.add(inyeccion);
         }
         return inyecciones;
+    }
+
+    public List<Inyeccion> getInyeccionesIncidenciaRango (int dias) throws SQLException {
+        List<Inyeccion> inyeccionesIncidencias = new ArrayList<>();
+        connection = DBConnection.getConnection();
+        String query = """
+             SELECT 
+             i.id_inyeccion, i.fecha_hora, i.dosis, 
+             z.id_zona, z.zona_cuerpo, 
+             inc.id_incidencia, inc.tipo_incidencia
+            FROM inyeccion i
+            INNER JOIN incidencia inc
+            ON i.id_inyeccion = inc.id_inyeccion
+            INNER JOIN zona z
+            ON z.id_zona = i.id_zona
+            WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+            ORDER BY i.fecha_hora DESC;""";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, dias);
+        resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()){
+            int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
+            LocalDateTime fechaHora = resultSet.getObject(DBSchem.COL_INY_FECHA, LocalDateTime.class);
+            double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
+            int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
+            int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
+            TipoIncidencia tipoIncidencia = TipoIncidencia.desdeBD(resultSet.getString(DBSchem.COL_INC_TIPO));
+            Incidencia incidencia = new Incidencia(idIncidencia, tipoIncidencia);
+            Zona zona = EstadoService.getInstance().getZonaByID(idZona);
+            Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, zona, incidencia);
+            inyeccionesIncidencias.add(inyeccion);
+        }
+        return inyeccionesIncidencias;
     }
 
     public Inyeccion getUltimaInyeccion(int idPluma) throws SQLException {

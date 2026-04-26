@@ -11,7 +11,6 @@ import org.example.myinsuapp.service.InyeccionService;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class RegistroController implements Initializable {
