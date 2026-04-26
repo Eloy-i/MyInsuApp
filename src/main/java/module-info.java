@@ -2,6 +2,7 @@ module org.example.myinsuapp {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires javafx.base;
 
 
     opens org.example.myinsuapp to javafx.fxml;

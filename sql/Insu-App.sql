@@ -415,6 +415,19 @@ WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
 GROUP BY z.zona_cuerpo, inc.tipo_incidencia
 ORDER BY z.zona_cuerpo, total_incidencias DESC;
 
+-- Busqueda para el chart similar a la anterior pero incluyendo Null para encontrar inyecciones SIN incidencia
+
+SELECT z.zona_cuerpo AS zonas_cuerpo,
+       inc.tipo_incidencia,
+       COUNT(i.id_inyeccion) AS total
+FROM zona z
+INNER JOIN inyeccion i
+ON i.id_zona = z.id_zona
+LEFT JOIN incidencia inc
+ON inc.id_inyeccion = i.id_inyeccion
+WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+GROUP BY z.zona_cuerpo, inc.tipo_incidencia;
+
 
 -- ---------
 -- Inicio
