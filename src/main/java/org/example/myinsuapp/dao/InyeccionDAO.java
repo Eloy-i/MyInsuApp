@@ -162,6 +162,19 @@ public class InyeccionDAO {
 
     }
 
+    public void borrarInyeccion(Inyeccion inyeccion) throws SQLException {
+        int idInyeccion = inyeccion.getIdInyeccion();
+        connection = DBConnection.getConnection();
+        String query = """
+                DELETE FROM inyeccion
+                WHERE id_inyeccion = ?
+                AND fecha_hora >= NOW() - INTERVAL 2 HOUR;""";
+
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, idInyeccion);
+        preparedStatement.executeUpdate();
+    }
+
     /*
 
     Me ha parecido demasiado ilegible y he decidido finalmente solo poner en formato los nombres de las tablas

@@ -466,4 +466,11 @@ ON z.id_zona = i.id_zona
 WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
 ORDER BY i.fecha_hora DESC;
 
-
+-- --------------------------
+-- Borrado de inyeccion
+-- .----------------------
+-- En una app médica de verdad no se podría pero como hay que hacer un Delete... On Delete cascade asegura que se borre también la incidencia asociada
+-- Le añado un límite de borrado de 2 horas
+DELETE FROM inyeccion
+WHERE id_inyeccion = ?
+AND fecha_hora >= NOW() - INTERVAL 2 HOUR;

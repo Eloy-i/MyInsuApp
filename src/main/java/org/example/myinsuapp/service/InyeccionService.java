@@ -7,6 +7,7 @@ import org.example.myinsuapp.model.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class InyeccionService {
@@ -111,6 +112,20 @@ public class InyeccionService {
         } catch (SQLException e) {
             throw new RuntimeException(e); //capturar o lanzar personalizada?
         }
+    }
+
+    public void eliminarInyeccion(Inyeccion inyeccion){
+        long horasPasadas = ChronoUnit.HOURS.between(inyeccion.getHoraInyeccion(), LocalDateTime.now());
+
+        if (horasPasadas > 2){
+            throw new RuntimeException("Tiempo pasado... Lanzar excepción propia.");
+        }
+        try {
+            inyeccionDAO.borrarInyeccion(inyeccion);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 

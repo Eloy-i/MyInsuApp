@@ -98,6 +98,7 @@ public class HistoricoController implements Initializable {
     }
 
     private void actions() {
+
         btnVerHistorial.setOnAction(event ->{
             listaIyecciones.clear();
             int dias = comboRango.getValue();
@@ -106,9 +107,18 @@ public class HistoricoController implements Initializable {
            }else {
                listaIyecciones.addAll(inyeccionService.listaInyecciones(dias));
            }
+        });
 
+        btnEliminar.setOnAction(event -> {
+            Inyeccion inyeccion = tableView.getSelectionModel().getSelectedItem();
 
-
+            if (inyeccion != null){
+                try {
+                    inyeccionService.eliminarInyeccion(inyeccion);
+                } catch (RuntimeException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 }
