@@ -1,35 +1,49 @@
 package org.example.myinsuapp.model;
-
-import java.time.LocalDate;
+import jakarta.xml.bind.annotation.*;
 import java.util.Map;
-
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "Informe")
 public class InformeMedico {
-    private LocalDate fechaInforme;
-    private String nombreUsuarioActual;
-    private int edadUsuario;
-    private String tipoDiabetesUsuario;
+
+    @XmlAttribute(name = "fecha")
+    private String fechaInforme;
+    @XmlAttribute
+    private int rangoDias;
+    @XmlElement(name = "Paciente")
+    private DatosUsuarioInforme datosUsuario;
+    @XmlElement(name = "TotalInsulinaAdministrada")
     private double dosisTotal;
+    @XmlElement (name = "PromedioInsulinaDiaria")
     private double promedioInsulinaDia;
+    @XmlElement (name = "InyeccionesTotales")
     private int totalInyecciones;
+    @XmlElement(name = "IncidenciasTotales")
     private int totalIncidencias;
+    @XmlElement(name = "DosisMáxima")
     private double picoMaxInsulina;
+    @XmlElement(name = "MediaInyeccionesDiarías")
     private double inyeccionesPorDia;
+    @XmlElement(name = "ZonaMasUsada")
     private String zonaMasUsada;
+    @XmlElement(name = "ZonaMasIncidencias")
     private String zonaMasProblematica;
+    @XmlElement(name = "FrecuenciaIncidencias")
     private double porcentajeIncidencia;
 
+    //Todo (como coyons trato los mapas?
+    @XmlTransient
     private Map<String, Integer> usoZonas;
+    @XmlTransient
     private Map<String, Map<String, Integer>> historialIncidenciasPorZona;
 
-    public InformeMedico(LocalDate fechaInforme, String nombreUsuarioActual, int edadUsuario,
-                         String tipoDiabetesUsuario, double dosisTotal, double promedioInsulinaDia, double picoMaxInsulina,
-                         int totalInyecciones, int totalIncidencias, double inyeccionesPorDia, String zonaMasUsada, String zonaMasProblematica,
+    public InformeMedico(String fechaInforme, int rangoDias, DatosUsuarioInforme datosUsuario,
+                         double dosisTotal, double promedioInsulinaDia, double picoMaxInsulina, int totalInyecciones,
+                         int totalIncidencias, double inyeccionesPorDia, String zonaMasUsada, String zonaMasProblematica,
                          double porcentajeIncidencia, Map<String, Integer> usoZonas,
                          Map<String, Map<String, Integer>> historialIncidenciasPorZona) {
         this.fechaInforme = fechaInforme;
-        this.nombreUsuarioActual = nombreUsuarioActual;
-        this.edadUsuario = edadUsuario;
-        this.tipoDiabetesUsuario = tipoDiabetesUsuario;
+        this.rangoDias = rangoDias;
+        this.datosUsuario = datosUsuario;
         this.dosisTotal = dosisTotal;
         this.totalInyecciones = totalInyecciones;
         this.totalIncidencias = totalIncidencias;
@@ -43,20 +57,21 @@ public class InformeMedico {
         this.historialIncidenciasPorZona = historialIncidenciasPorZona;
     }
 
-    public LocalDate getFechaInforme() {
+    /*
+    1 counts of IllegalAnnotationExceptions
+    org.example.myinsuapp.model.InformeMedico no tiene un constructor por defecto sin argumentos.
+    Ha sido ver eso y me he acordado de que hablaste de la importancia del constructor vacio cuando llegaramos a ficheros.
+     */
+    public InformeMedico(){}
+
+    public String getFechaInforme() {
         return fechaInforme;
     }
 
-    public String getNombreUsuarioActual() {
-        return nombreUsuarioActual;
-    }
+    public int getRangoDias() { return rangoDias; }
 
-    public int getEdadUsuario() {
-        return edadUsuario;
-    }
-
-    public String getTipoDiabetesUsuario() {
-        return tipoDiabetesUsuario;
+    public DatosUsuarioInforme getDatosUsuario() {
+        return datosUsuario;
     }
 
     public double getDosisTotal() {
@@ -103,22 +118,6 @@ public class InformeMedico {
         return porcentajeIncidencia;
     }
 
-    public void setFechaInforme(LocalDate fechaInforme) {
-        this.fechaInforme = fechaInforme;
-    }
-
-    public void setNombreUsuarioActual(String nombreUsuarioActual) {
-        this.nombreUsuarioActual = nombreUsuarioActual;
-    }
-
-    public void setEdadUsuario(int edadUsuario) {
-        this.edadUsuario = edadUsuario;
-    }
-
-    public void setTipoDiabetesUsuario(String tipoDiabetesUsuario) {
-        this.tipoDiabetesUsuario = tipoDiabetesUsuario;
-    }
-
     public void setDosisTotal(double dosisTotal) {
         this.dosisTotal = dosisTotal;
     }
@@ -153,5 +152,23 @@ public class InformeMedico {
 
     public void setHistorialIncidenciasPorZona(Map<String, Map<String, Integer>> historialIncidenciasPorZona) {
         this.historialIncidenciasPorZona = historialIncidenciasPorZona;
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class DatosUsuarioInforme{
+        @XmlElement(name = "NombreCompleto")
+        private String nombreCompleto;
+        @XmlElement(name = "Edad")
+        private int edad;
+        @XmlElement(name = "TipoDiabetes")
+        private String tipoDiabetes;
+
+        public DatosUsuarioInforme(){}
+
+        public DatosUsuarioInforme(String nombreCompleto, int edad, String tipoDiabetes){
+            this.nombreCompleto = nombreCompleto;
+            this.edad = edad;
+            this.tipoDiabetes = tipoDiabetes;
+        }
     }
 }

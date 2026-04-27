@@ -1,9 +1,13 @@
 package org.example.myinsuapp.model;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import java.time.LocalDate;
 
 public class Usuario {
     private int idUsuario;
-    private String nombre, apellidos;
+    private String nombre;
+    private String apellidos;
     private TipoDiabetes tipoDiabetes ;
     private LocalDate fechaNacimiento;
 

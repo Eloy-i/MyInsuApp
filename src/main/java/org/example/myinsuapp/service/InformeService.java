@@ -3,6 +3,7 @@ package org.example.myinsuapp.service;
 import org.example.myinsuapp.dao.InformeDAO;
 import org.example.myinsuapp.model.InformeMedico;
 import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.util.XmlExportUtil;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -10,8 +11,10 @@ import java.util.Map;
 
 public class InformeService {
     private InformeDAO informeDAO;
+    private XmlExportUtil xmlExportUtil;
     public InformeService() {
         this.informeDAO = new InformeDAO();
+        this.xmlExportUtil = new XmlExportUtil();
     }
     /*
     public InformeMedico(LocalDate fechaInforme, String nombreUsuarioActual, int edadUsuario,
@@ -35,12 +38,12 @@ public class InformeService {
      */
 
     public InformeMedico informeCompleto (int dias){
-        Usuario usuario = EstadoService.getInstance().getUsuario();
-        InformeMedico informeMedico = null;
-        LocalDate fechaInforme = LocalDate.now();
-        String nombreUser = usuario.getNombre()+ " " + usuario.getApellidos();
-        int edad = usuario.getFechaNacimiento().getYear();
-        String tipoDt = usuario.getTipoDiabetes().toString();
+
+        InformeMedico informeMedico;
+
+        String fechaInforme = LocalDate.now().toString();
+        int rangoDias = dias;
+        InformeMedico.DatosUsuarioInforme datosUsuario = getDatosUsuarioInforme();
         try {
             double dosisTotal = informeDAO.dosisTotalPeriodo(dias);
             double promedioInsulina = promedioInsulinaDiaria(dosisTotal, dias);
@@ -53,9 +56,12 @@ public class InformeService {
             double porcentajeIncidencias = porcentejeIncidencias(totalIncidencias, totalInyecciones);
             Map<String, Integer> usoZonas = informeDAO.usoZonasPeriodo(dias);
             Map<String, Map<String, Integer>> incidenciasPorZonazona = informeDAO.incidenciasPorZona(dias);
-            informeMedico = new InformeMedico(fechaInforme, nombreUser, edad, tipoDt,
+
+            informeMedico = new InformeMedico(fechaInforme, rangoDias, datosUsuario,
                     dosisTotal, promedioInsulina, dosisMax, totalInyecciones, totalIncidencias, inyeccionesPorDia, zonaMasUsada,
                     zonaMasIncidencias, porcentajeIncidencias, usoZonas, incidenciasPorZonazona);
+
+            xmlExportUtil.exportarXmlInforme(informeMedico);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
@@ -74,6 +80,19 @@ public class InformeService {
         }
         return ((double) totalIncidencias / totalInyecciones) * 100;
 
+    }
+
+    private InformeMedico.DatosUsuarioInforme getDatosUsuarioInforme(){
+        Usuario usuario = EstadoService.getInstance().getUsuario();
+
+        String nombreComplero = usuario.getNombre()+" "+usuario.getApellidos();
+
+        int edadCalculada = java.time.Period.between(usuario.getFechaNacimiento(),
+                LocalDate.now()).getYears();
+
+        String tDiabetes = usuario.getTipoDiabetes().toString();
+
+        return new InformeMedico.DatosUsuarioInforme(nombreComplero, edadCalculada, tDiabetes);
     }
 
 }

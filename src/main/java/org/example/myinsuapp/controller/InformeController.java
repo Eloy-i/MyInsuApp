@@ -123,15 +123,8 @@ public class InformeController implements Initializable {
         graficoZonas.setData(listaQuesitos);
     }
 
-    /*
-    3 horas mirando videos sobre como llenar un StackedBarChart y recorrer un map anidado para esto... Recordatorio, abandonar programación e ir a criar ovejas.
 
-    Funciona a medias... Los datos y la gráfica se pintan bien pero el String Zona sale apiñado en la izquierda en vez de salir bajo la barra que le corresponde
-     */
-
-    //Todo repasar porqué el String zona sale mezclado a la izquierda y hacer que se pinte en su lugar correspondiente.
-    // Todo 2 -> Si no se logra pensar si entregar así con el bug visual o eliminar del todo.
-    // TODO 3 -> Lo deje o no, recordar anotar comentarios de flujo de trabajo porque en dos semanas no voy a recordar como c he hecho esto.
+    //TODO comentario de flujo de trabajo pendiente, para explicar que hace este metodo paso a paso.
 
     private void setGraficoBarras (InformeMedico informeMedico){
         barraIncidencias.getData().clear();
