@@ -43,7 +43,7 @@ public class InformeService {
         String tipoDt = usuario.getTipoDiabetes().toString();
         try {
             double dosisTotal = informeDAO.dosisTotalPeriodo(dias);
-            double promedioInsulina = promedioInsulinaDiaria(dias);
+            double promedioInsulina = promedioInsulinaDiaria(dosisTotal, dias);
             double dosisMax = informeDAO.picoMaxInsulinaPeriodo(dias);
             int totalInyecciones = informeDAO.totalInyeccionesPeriodo(dias);
             int totalIncidencias = informeDAO.totalIncidenciasPeriodo(dias);
@@ -65,8 +65,8 @@ public class InformeService {
 
     }
 
-    private double promedioInsulinaDiaria (int dias) throws SQLException {
-        return informeDAO.dosisTotalPeriodo(dias) / dias;
+    private double promedioInsulinaDiaria (double totalDosis, int dias) throws SQLException {
+        return totalDosis / dias;
     }
     private double porcentejeIncidencias (int totalIncidencias, int totalInyecciones){
         if (totalInyecciones == 0){

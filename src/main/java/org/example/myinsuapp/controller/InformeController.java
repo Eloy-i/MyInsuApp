@@ -13,9 +13,7 @@ import org.example.myinsuapp.model.InformeMedico;
 import org.example.myinsuapp.service.InformeService;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class InformeController implements Initializable {
 
@@ -125,7 +123,39 @@ public class InformeController implements Initializable {
         graficoZonas.setData(listaQuesitos);
     }
 
+    /*
+    3 horas mirando videos sobre como llenar un StackedBarChart y recorrer un map anidado para esto... Recordatorio, abandonar programación e ir a criar ovejas.
+
+    Funciona a medias... Los datos y la gráfica se pintan bien pero el String Zona sale apiñado en la izquierda en vez de salir bajo la barra que le corresponde
+     */
+
+    //Todo repasar porqué el String zona sale mezclado a la izquierda y hacer que se pinte en su lugar correspondiente.
+    // Todo 2 -> Si no se logra pensar si entregar así con el bug visual o eliminar del todo.
+    // TODO 3 -> Lo deje o no, recordar anotar comentarios de flujo de trabajo porque en dos semanas no voy a recordar como c he hecho esto.
+
     private void setGraficoBarras (InformeMedico informeMedico){
-        //TODO he sido derrotado por el PierChart, dos horas y no he sido capaz de pintarlo como quería... Borrar esto ya qu elo tengo en la tableview o hacer otro grafico de quesitos
+        barraIncidencias.getData().clear();
+        barraIncidencias.setAnimated(false);
+        Map<String, Map<String, Integer>> incidenciasTotalesPorZona = informeMedico.getHistorialIncidenciasPorZona();
+        Set<String> incidencias = new HashSet<>();
+
+
+        for (Map<String, Integer> value : incidenciasTotalesPorZona.values()) {
+            for (String s : value.keySet()) {
+                incidencias.add(s);
+            }
+        }
+
+        for (String incidencia : incidencias) {
+            XYChart.Series series = new XYChart.Series<>();
+            series.setName(incidencia);
+            for (Map.Entry<String, Map<String, Integer>> stringMapEntry : incidenciasTotalesPorZona.entrySet()) {
+                String zona = stringMapEntry.getKey();
+                int cantidad = stringMapEntry.getValue().getOrDefault(incidencia, 0);
+                series.getData().add(new XYChart.Data<>(zona, cantidad));
+            }
+            barraIncidencias.getData().add(series);
+
+        }
     }
 }
