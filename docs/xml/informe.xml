@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Informe fecha="2026-04-27" rangoDias="15">
+<Informe fecha="2026-04-28" rangoDias="15">
     <Paciente>
         <NombreCompleto>Demo Demirez</NombreCompleto>
         <Edad>26</Edad>
         <TipoDiabetes>LADA</TipoDiabetes>
     </Paciente>
-    <TotalInsulinaAdministrada>112.0</TotalInsulinaAdministrada>
-    <PromedioInsulinaDiaria>7.466666666666667</PromedioInsulinaDiaria>
-    <InyeccionesTotales>20</InyeccionesTotales>
-    <IncidenciasTotales>7</IncidenciasTotales>
+    <TotalInsulinaAdministrada>95.0</TotalInsulinaAdministrada>
+    <PromedioInsulinaDiaria>6.333333333333333</PromedioInsulinaDiaria>
+    <InyeccionesTotales>15</InyeccionesTotales>
+    <IncidenciasTotales>5</IncidenciasTotales>
     <DosisMáxima>12.5</DosisMáxima>
-    <MediaInyeccionesDiarías>1.3333</MediaInyeccionesDiarías>
+    <MediaInyeccionesDiarías>1.0</MediaInyeccionesDiarías>
     <ZonaMasUsada>abdomen izquierdo</ZonaMasUsada>
     <ZonaMasIncidencias>abdomen izquierdo</ZonaMasIncidencias>
-    <FrecuenciaIncidencias>35.0</FrecuenciaIncidencias>
+    <FrecuenciaIncidencias>33.33333333333333</FrecuenciaIncidencias>
 </Informe>

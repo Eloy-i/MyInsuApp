@@ -16,6 +16,7 @@ public class ZonaUsoDTO {
     @XmlElement(name = "TipoIncidenciasRegistradas")
     private List<IncidenciaDTO> listaIncidenciasZona;
 
+
     public ZonaUsoDTO(String nombreZona, int usoTotal, List<IncidenciaDTO> listaIncidenciasZona) {
         this.nombreZona = nombreZona;
         this.usoTotal = usoTotal;
