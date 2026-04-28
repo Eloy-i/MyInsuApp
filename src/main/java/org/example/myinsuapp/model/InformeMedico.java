@@ -1,6 +1,8 @@
 package org.example.myinsuapp.model;
 import jakarta.xml.bind.annotation.*;
 import java.util.Map;
+
+//Homenaje a Luz, esta clase es un Code Smell de manual.
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "Informe")
 public class InformeMedico {
