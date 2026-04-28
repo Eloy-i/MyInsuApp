@@ -9,12 +9,11 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import org.example.myinsuapp.model.InformeMedico;
 import org.example.myinsuapp.model.dto.IncidenciaDTO;
 import org.example.myinsuapp.model.dto.InformeMedicoDTO;
+import org.example.myinsuapp.model.dto.ResumenInyeccionesDTO;
 import org.example.myinsuapp.model.dto.ZonaUsoDTO;
 import org.example.myinsuapp.service.InformeService;
-import org.example.myinsuapp.service.InformeServiceDos;
 
 import java.net.URL;
 import java.util.*;
@@ -23,8 +22,6 @@ import java.util.stream.Collectors;
 public class InformeController implements Initializable {
 
     private InformeService informeService;
-
-    private InformeServiceDos informeServiceDos;
 
     ObservableList<PieChart.Data> listaQuesitos;
 
@@ -81,7 +78,6 @@ public class InformeController implements Initializable {
 
     private void instances() {
         informeService = new InformeService();
-        informeServiceDos = new InformeServiceDos();
         listaQuesitos = FXCollections.observableArrayList();
     }
 
@@ -96,22 +92,22 @@ public class InformeController implements Initializable {
 
             int dias = rangoDiasCombo.getValue();
             try {
-                InformeMedicoDTO informeMedicoDTO = informeServiceDos.informeMedicoDTO(dias);
+                InformeMedicoDTO informeMedicoDTO = informeService.generarInforme(dias);
+
+                ResumenInyeccionesDTO resumen = informeMedicoDTO.getResumenInyeccionesDTO();
+
+                lblDosisTotal.setText(resumen.getDosisTotal()+" uds");
+                lblPromedioUdDiario.setText(resumen.getPromedioInsulinaDia()+ "uds/día");
+                lblPicoMaximo.setText(resumen.getDosisMaxInsulina()+ " uds");
+                lblTotalInyecciones.setText(resumen.getTotalInyecciones()+" inyecciones");
+                lblTotalIncidencias.setText(resumen.getTotalIncidencias()+" incidencias");
+                lblInyeccionesDia.setText(resumen.getInyeccionesPorDia()+" inyecciones/día");
+                lblZonaMasUsada.setText(resumen.getZonaMasUsada());
+                lblZonaMasIncidencias.setText(resumen.getZonaMasProblematica());
+                lblTasaIncidencias.setText(resumen.getPorcentajeIncidencia()+" %");
+
                 setGraficoQuesitosDos(informeMedicoDTO);
                 setGraficoBarrasDos(informeMedicoDTO);
-                InformeMedico informeMedico = informeService.informeCompleto(dias);
-                lblDosisTotal.setText(informeMedico.getDosisTotal()+" uds");
-                lblPromedioUdDiario.setText(String.format("%.1f uds/día", informeMedico.getPromedioInsulinaDia()));
-                lblPicoMaximo.setText(informeMedico.getPicoMaxInsulina()+ " uds");
-                lblTotalInyecciones.setText(informeMedico.getTotalInyecciones()+" inyecciones");
-                lblTotalIncidencias.setText(informeMedico.getTotalIncidencias()+" incidencias");
-                lblInyeccionesDia.setText(String.format("%.1f inyecciones/día", informeMedico.getInyeccionesPorDia()));
-                lblZonaMasUsada.setText(informeMedico.getZonaMasUsada());
-                lblZonaMasIncidencias.setText(informeMedico.getZonaMasProblematica());
-                lblTasaIncidencias.setText(String.format("%.1f%%", informeMedico.getPorcentajeIncidencia()));
-
-                //setGraficoQuesitos(informeMedico);
-                //setGraficoBarras(informeMedico);
 
 
 
@@ -120,19 +116,6 @@ public class InformeController implements Initializable {
             }
 
         });
-    }
-
-    private void setGraficoQuesitos (InformeMedico informeMedico){
-        graficoZonas.getData().clear();
-
-        Map<String, Integer> usoZonas = informeMedico.getUsoZonas();
-
-        for (Map.Entry<String, Integer> entry : usoZonas.entrySet()) {
-            if (entry.getValue() > 0){
-                listaQuesitos.add(new PieChart.Data(entry.getKey(), entry.getValue()));
-            }
-        }
-        graficoZonas.setData(listaQuesitos);
     }
 
     private void setGraficoQuesitosDos(InformeMedicoDTO informeMedicoDTO){
@@ -147,10 +130,39 @@ public class InformeController implements Initializable {
 
     }
 
+    /*
+    Me he querido forzar al uso de lamdas y esta web para me ha salvado para entender el flatMap
+    https://www.arquitecturajava.com/java-8-flatmap/
+     */
+    public void setGraficoBarrasDos(InformeMedicoDTO informeMedicoDTO){
+        barraIncidencias.getData().clear();
+        barraIncidencias.setAnimated(false);
+        List<ZonaUsoDTO> zonaUsoDTOList = informeMedicoDTO.getListaUsoZonas();
 
-    //TODO comentario de flujo de trabajo pendiente, para explicar que hace este metodo paso a paso.
+        Set<String> incidencias = zonaUsoDTOList.stream()
+                .map(zona -> zona.getListaIncidenciasZona())
+                .flatMap(listaIncidencias -> listaIncidencias.stream())
+                .map(IncidenciaDTO::getTipoIncidencia).collect(Collectors.toSet());
 
-    private void setGraficoBarras (InformeMedico informeMedico){
+        incidencias.forEach(incidencia -> {
+            XYChart.Series series = new XYChart.Series();
+            series.setName(incidencia);
+
+            zonaUsoDTOList.forEach(zona ->{
+                int cantidad = zona.getListaIncidenciasZona().stream().filter(nombreIncidencia ->
+                        nombreIncidencia.getTipoIncidencia().equalsIgnoreCase(series.getName()))
+                        .map(IncidenciaDTO::getCantidadTotal)
+                        .findFirst().orElse(0);
+                series.getData().add(new XYChart.Data<>(zona.getNombreZona(), cantidad));
+
+            });
+            barraIncidencias.getData().add(series);
+        });
+    }
+
+     /*
+
+    private void setGraficoBarrasNULL (InformeMedico informeMedico){
         barraIncidencias.getData().clear();
         barraIncidencias.setAnimated(false);
         Map<String, Map<String, Integer>> incidenciasTotalesPorZona = informeMedico.getHistorialIncidenciasPorZona();
@@ -176,32 +188,5 @@ public class InformeController implements Initializable {
         }
     }
 
-    /*
-    Me he querido forzar al uso de lamdas y esta web para me ha salvado para entender el flatMap
-    https://www.arquitecturajava.com/java-8-flatmap/
-     */
-    public void setGraficoBarrasDos(InformeMedicoDTO informeMedicoDTO){
-        barraIncidencias.getData().clear();
-        List<ZonaUsoDTO> zonaUsoDTOList = informeMedicoDTO.getListaUsoZonas();
-
-        Set<String> incidencias = zonaUsoDTOList.stream()
-                .map(zona -> zona.getListaIncidenciasZona())
-                .flatMap(listaIncidencias -> listaIncidencias.stream())
-                .map(IncidenciaDTO::getTipoIncidencia).collect(Collectors.toSet());
-
-        incidencias.forEach(incidencia -> {
-            XYChart.Series series = new XYChart.Series();
-            series.setName(incidencia);
-
-            zonaUsoDTOList.forEach(zona ->{
-                int cantidad = zona.getListaIncidenciasZona().stream().filter(nombreIncidencia ->
-                        nombreIncidencia.getTipoIncidencia().equalsIgnoreCase(series.getName()))
-                        .map(IncidenciaDTO::getCantidadTotal)
-                        .findFirst().orElse(0);
-                series.getData().add(new XYChart.Data<>(zona.getNombreZona(), cantidad));
-
-            });
-            barraIncidencias.getData().add(series);
-        });
-    }
+   */
 }

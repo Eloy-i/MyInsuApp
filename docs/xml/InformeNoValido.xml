@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Informe fecha="2026-04-28" rangoDias="30">
+    <Paciente>
+        <Nombre>Demo Demirez</Nombre>
+        <Edad>26</Edad>
+        <TipoDiabetes>LADA</TipoDiabetes>
+    </Paciente>
+    <ResumenInyecciones>
+        <TotalInsulinaUsada>238.5</TotalInsulinaUsada>
+        <PromedioDiario>7.95</PromedioDiario>
+        <DosisMaxima>12.5</DosisMaxima>
+        <TotalInyecciones>47</TotalInyecciones>
+        <TotalIncidencias>10</TotalIncidencias>
+        <MediaInyeccionesDiarias>1.57</MediaInyeccionesDiarias>
+        <ZonaMasUsada>abdomen izquierdo</ZonaMasUsada>
+        <ZonaMasIncidencias>gluteo derecho</ZonaMasIncidencias>
+        <PorcentajeIncidencias>21.28</PorcentajeIncidencias>
+    </ResumenInyecciones>
+    <Zonas>
+        <Zona nombre="abdomen izquierdo">
+            <TotalInyecciones>19</TotalInyecciones>
+            <Incidencia>
+                <Tipo>Sin incidencia</Tipo>
+                <Cantidad>16</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>dolor agudo</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>sangrado</Tipo>
+                <Cantidad>2</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="gluteo izquierdo">
+            <TotalInyecciones>1</TotalInyecciones>
+            <Incidencia>
+                <Tipo>sangrado</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="muslo izquierdo">
+            <TotalInyecciones>2</TotalInyecciones>
+            <Incidencia>
+                <Tipo>Sin incidencia</Tipo>
+                <Cantidad>2</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="abdomen derecho">
+            <TotalInyecciones>1</TotalInyecciones>
+            <Incidencia>
+                <Tipo>sangrado</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="muslo derecho">
+            <TotalInyecciones>1</TotalInyecciones>
+            <Incidencia>
+                <Tipo>Sin incidencia</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="triceps derecho">
+            <TotalInyecciones>4</TotalInyecciones>
+            <Incidencia>
+                <Tipo>Sin incidencia</Tipo>
+                <Cantidad>3</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>sangrado</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="triceps izquierdo">
+            <TotalInyecciones>15</TotalInyecciones>
+            <Incidencia>
+                <Tipo>bola insulina</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>Sin incidencia</Tipo>
+                <Cantidad>14</Cantidad>
+            </Incidencia>
+        </Zona>
+        <Zona nombre="gluteo derecho">
+            <TotalInyecciones>4</TotalInyecciones>
+            <Incidencia>
+                <Tipo>bola insulina</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>Sin incidencia</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>dolor agudo</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+            <Incidencia>
+                <Tipo>sangrado</Tipo>
+                <Cantidad>1</Cantidad>
+            </Incidencia>
+        </Zona>
+    </Zonas>
+</Informe>

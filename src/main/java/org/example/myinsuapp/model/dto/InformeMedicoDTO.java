@@ -13,9 +13,9 @@ public class InformeMedicoDTO {
     private int rangoDias;
     @XmlElement(name = "Paciente")
     private UsuarioDTO usuarioDTO;
-    @XmlElement(name = "ResumenEstadisticoInyecciones")
+    @XmlElement(name = "ResumenInyecciones")
     private ResumenInyeccionesDTO resumenInyeccionesDTO;
-    @XmlElementWrapper(name = "ResumenEstadisticoZonas")
+    @XmlElementWrapper(name = "Zonas")
     @XmlElement(name = "Zona")
     private List<ZonaUsoDTO> listaUsoZonas;
 
@@ -27,6 +27,8 @@ public class InformeMedicoDTO {
         this.resumenInyeccionesDTO = resumenInyeccionesDTO;
         this.listaUsoZonas = listaUsoZonas;
     }
+
+    public InformeMedicoDTO(){}
 
     public String getFechaInforme() {
         return fechaInforme;

@@ -12,4 +12,5 @@ module org.example.myinsuapp {
     exports org.example.myinsuapp.controller;
     opens org.example.myinsuapp.model to javafx.base, jakarta.xml.bind;
     exports org.example.myinsuapp.model;
+    opens org.example.myinsuapp.model.dto to jakarta.xml.bind;
 }

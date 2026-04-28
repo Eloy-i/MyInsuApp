@@ -9,11 +9,11 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ZonaUsoDTO {
-    @XmlElement(name = "Zona")
+    @XmlAttribute(name = "nombre")
     private String nombreZona;
-    @XmlElement(name = "TotalInyecciones")
+    @XmlAttribute(name = "totalInyecciones")
     private int usoTotal;
-    @XmlElement(name = "TipoIncidenciasRegistradas")
+    @XmlElement(name = "Incidencia")
     private List<IncidenciaDTO> listaIncidenciasZona;
 
 

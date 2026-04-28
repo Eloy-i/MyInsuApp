@@ -6,23 +6,23 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResumenInyeccionesDTO {
-    @XmlElement(name = "TotalInsulinaAdministrada")
+    @XmlElement(name = "TotalInsulinaUsada")
     private double dosisTotal;
-    @XmlElement (name = "PromedioInsulinaDiaria")
+    @XmlElement (name = "PromedioDiario")
     private double promedioInsulinaDia;
-    @XmlElement(name = "DosisMáxima")
+    @XmlElement(name = "DosisMaxima")
     private double dosisMaxInsulina;
-    @XmlElement (name = "InyeccionesTotales")
+    @XmlElement (name = "TotalInyecciones")
     private int totalInyecciones;
-    @XmlElement(name = "IncidenciasTotales")
+    @XmlElement(name = "TotalIncidencias")
     private int totalIncidencias;
-    @XmlElement(name = "MediaInyeccionesDiarías")
+    @XmlElement(name = "MediaInyeccionesDiarias")
     private double inyeccionesPorDia;
     @XmlElement(name = "ZonaMasUsada")
     private String zonaMasUsada;
     @XmlElement(name = "ZonaMasIncidencias")
     private String zonaMasProblematica;
-    @XmlElement(name = "FrecuenciaIncidencias")
+    @XmlElement(name = "PorcentajeIncidencias")
     private double porcentajeIncidencia;
 
     public ResumenInyeccionesDTO(double dosisTotal, double promedioInsulinaDia, double dosisMaxInsulina,

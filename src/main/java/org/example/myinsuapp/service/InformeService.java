@@ -1,98 +1,131 @@
 package org.example.myinsuapp.service;
 
 import org.example.myinsuapp.dao.InformeDAO;
-import org.example.myinsuapp.model.InformeMedico;
 import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.model.dto.*;
 import org.example.myinsuapp.util.XmlExportUtil;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class InformeService {
     private InformeDAO informeDAO;
+
     private XmlExportUtil xmlExportUtil;
     public InformeService() {
         this.informeDAO = new InformeDAO();
-        this.xmlExportUtil = new XmlExportUtil();
+        xmlExportUtil = new XmlExportUtil();
     }
-    /*
-    public InformeMedico(LocalDate fechaInforme, String nombreUsuarioActual, int edadUsuario,
-                         String tipoDiabetesUsuario, double dosisTotal, double promedioInsulinaDia, double picoMaxInsulina,
-                         double inyeccionesPorDia, String zonaMasUsada, String zonaMasProblematica, double porcentajeIncidencia,
-                         Map<String, Integer> usoZonas, Map<String, Map<String, Integer>> historialIncidenciasPorZona) {
-        this.fechaInforme = fechaInforme;
-        this.nombreUsuarioActual = nombreUsuarioActual;
-        this.edadUsuario = edadUsuario;
-        this.tipoDiabetesUsuario = tipoDiabetesUsuario;
-        this.dosisTotal = dosisTotal;
-        this.promedioInsulinaDia = promedioInsulinaDia;
-        this.picoMaxInsulina = picoMaxInsulina;
-        this.inyeccionesPorDia = inyeccionesPorDia;
-        this.zonaMasUsada = zonaMasUsada;
-        this.zonaMasProblematica = zonaMasProblematica;
-        this.porcentajeIncidencia = porcentajeIncidencia;
-        this.usoZonas = usoZonas;
-        this.historialIncidenciasPorZona = historialIncidenciasPorZona;
-    }
-     */
 
-    public InformeMedico informeCompleto (int dias){
-
-        InformeMedico informeMedico;
-
+    public InformeMedicoDTO generarInforme(int dias) throws SQLException{
         String fechaInforme = LocalDate.now().toString();
         int rangoDias = dias;
-        InformeMedico.DatosUsuarioInforme datosUsuario = getDatosUsuarioInforme();
-        try {
-            double dosisTotal = informeDAO.dosisTotalPeriodo(dias);
-            double promedioInsulina = promedioInsulinaDiaria(dosisTotal, dias);
-            double dosisMax = informeDAO.picoMaxInsulinaPeriodo(dias);
-            int totalInyecciones = informeDAO.totalInyeccionesPeriodo(dias);
-            int totalIncidencias = informeDAO.totalIncidenciasPeriodo(dias);
-            double inyeccionesPorDia = informeDAO.mediaInyeccionesDiarias(dias);
-            String zonaMasUsada = informeDAO.zonaMasUsadaPeriodo(dias);
-            String zonaMasIncidencias = informeDAO.zonaMasIncidencias(dias);
-            double porcentajeIncidencias = porcentejeIncidencias(totalIncidencias, totalInyecciones);
-            Map<String, Integer> usoZonas = informeDAO.usoZonasPeriodo(dias);
-            Map<String, Map<String, Integer>> incidenciasPorZonazona = informeDAO.incidenciasPorZona(dias);
 
-            informeMedico = new InformeMedico(fechaInforme, rangoDias, datosUsuario,
-                    dosisTotal, promedioInsulina, dosisMax, totalInyecciones, totalIncidencias, inyeccionesPorDia, zonaMasUsada,
-                    zonaMasIncidencias, porcentajeIncidencias, usoZonas, incidenciasPorZonazona);
+        UsuarioDTO usuarioDTO = getUsuarioDTO();
+        ResumenInyeccionesDTO resumenInyeccionesDTO = getResumenInyeccionesDTO(dias);
+        List<ZonaUsoDTO> zonaUsoDTOList = listaUsoZonas(dias);
+        InformeMedicoDTO informeMedicoDTO = new InformeMedicoDTO(fechaInforme, rangoDias,
+                usuarioDTO, resumenInyeccionesDTO, zonaUsoDTOList);
+        xmlExportUtil.exportarXmlInforme(informeMedicoDTO);
 
-            xmlExportUtil.exportarXmlInforme(informeMedico);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+        return informeMedicoDTO;
+    }
+
+    private UsuarioDTO getUsuarioDTO(){
+        Usuario usuario = EstadoService.getInstance().getUsuario();
+
+        String nombreCompleto = usuario.getNombre()+" "+ usuario.getApellidos();
+        int edadCalculada = java.time.Period.between(usuario.getFechaNacimiento(),
+                LocalDate.now()).getYears();
+        String tipoDiabetes = usuario.getTipoDiabetes().toString();
+
+        return new UsuarioDTO(nombreCompleto, edadCalculada, tipoDiabetes);
+    }
+
+    private ResumenInyeccionesDTO getResumenInyeccionesDTO(int dias) throws SQLException{
+        ResumenInyeccionesDTO resumenInyeccionesDTO;
+
+        double dosisTotal = informeDAO.dosisTotalPeriodo(dias);
+        double promedioInsulina = promedioInsulinaDiaria(dosisTotal, dias);
+        double dosisMax = informeDAO.picoMaxInsulinaPeriodo(dias);
+        int totalInyecciones = informeDAO.totalInyeccionesPeriodo(dias);
+        int totalIncidencias = informeDAO.totalIncidenciasPeriodo(dias);
+        double inyeccionesPorDia = inyeccionesPorDia(totalInyecciones, dias);
+        String zonaMasUsada = informeDAO.zonaMasUsadaPeriodo(dias);
+        String zonaMasIncidencias = informeDAO.zonaMasIncidencias(dias);
+        double porcentajeIncidencias = porcentejeIncidencias(totalIncidencias, totalInyecciones);
+
+        resumenInyeccionesDTO = new ResumenInyeccionesDTO(dosisTotal, promedioInsulina, dosisMax, totalInyecciones,
+                    totalIncidencias, inyeccionesPorDia, zonaMasUsada, zonaMasIncidencias, porcentajeIncidencias);
+
+        return resumenInyeccionesDTO;
+    }
+
+    //Tres pequeños metodos para calculos... Se que los dos primeros son casi identicos, pero por legibilidad prefiero dejarlo así que rehusar uno,
+    private double promedioInsulinaDiaria (double totalDosis, int dias) {
+        if (dias <= 0){
+            return 0;
         }
-        return informeMedico;
-
+        double resultado = totalDosis / dias;
+        return Math.round(resultado *100.0) / 100.0;
     }
 
-    private double promedioInsulinaDiaria (double totalDosis, int dias) throws SQLException {
-        return totalDosis / dias;
+    private double inyeccionesPorDia(int totalInyecciones, int dias){
+        if (dias <= 0) return 0;
+        double resultado = (double) totalInyecciones / dias;
+        return Math.round(resultado * 100.0) / 100.0;
     }
+
     private double porcentejeIncidencias (int totalIncidencias, int totalInyecciones){
         if (totalInyecciones == 0){
             return 0;
         }
-        return ((double) totalIncidencias / totalInyecciones) * 100;
-
+        double resultado = ((double) totalIncidencias / totalInyecciones) * 100;
+        return Math.round(resultado *100.0) / 100.0;
     }
 
-    private InformeMedico.DatosUsuarioInforme getDatosUsuarioInforme(){
-        Usuario usuario = EstadoService.getInstance().getUsuario();
+    /*
+    Los dos metodos del DAO a los que voy a llamar almacenan los datos en dos map:
+        1. El primero almacena Clave: zona - valor: cantidad
+        2. El segundo es anidado y almacena Clave: Zona - Valor [clave: incidencia - valor: int de incidencias
 
-        String nombreComplero = usuario.getNombre()+" "+usuario.getApellidos();
+    En mi primer intento pasé estos datos en crudo al DTO y me explotaron en la cara al serializarlos con JABX. Por ello
+    los he convertido en dos clases DTO y en el service proceso estos datos.
 
-        int edadCalculada = java.time.Period.between(usuario.getFechaNacimiento(),
-                LocalDate.now()).getYears();
+    Nunca he estado mas orgulloso de sacar este méto-do que seguro es MUY mejorable pero me ha "emocionado" genuinamente meterme
+    en un embrollo así y ser capaz de extraer las capas... Ahora es cuando descubro que con un lamda en tres líneas se hace lo mismo jeje
 
-        String tDiabetes = usuario.getTipoDiabetes().toString();
+     */
 
-        return new InformeMedico.DatosUsuarioInforme(nombreComplero, edadCalculada, tDiabetes);
+    private List<ZonaUsoDTO> listaUsoZonas(int dias) throws SQLException{
+        List<ZonaUsoDTO> listaUsoZonasDTO = new ArrayList<>();
+
+        Map<String, Integer> usoZonas = informeDAO.usoZonasPeriodo(dias);
+        Map<String, Map<String, Integer>> incidenciasPorZona = informeDAO.incidenciasPorZona(dias);
+
+        for (Map.Entry<String, Integer> stringIntegerEntry : usoZonas.entrySet()) {
+            String zona = stringIntegerEntry.getKey();
+            int usoTotal = stringIntegerEntry.getValue();
+
+            Map<String, Integer> mapaInternoIncidencias = incidenciasPorZona.get(zona);
+            List<IncidenciaDTO> listaIncidenciaDTO = new ArrayList<>();
+            if (mapaInternoIncidencias != null){
+                for (Map.Entry<String, Integer> integerEntry : mapaInternoIncidencias.entrySet()) {
+                    String tipoIncidencia = integerEntry.getKey();
+                    int cantidadIncidencia = integerEntry.getValue();
+                    listaIncidenciaDTO.add(new IncidenciaDTO(tipoIncidencia, cantidadIncidencia));
+                }
+                listaUsoZonasDTO.add(new ZonaUsoDTO(zona, usoTotal, listaIncidenciaDTO));
+            }
+        }
+        return listaUsoZonasDTO;
     }
+
+
+
 
 }

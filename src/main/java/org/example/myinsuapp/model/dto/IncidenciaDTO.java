@@ -7,9 +7,9 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class IncidenciaDTO {
-    @XmlElement(name = "TipoIncidencia")
+    @XmlAttribute(name = "tipo")
     String tipoIncidencia;
-    @XmlElement(name = "CantidadRegistrada")
+    @XmlAttribute(name = "cantidad")
     int cantidadTotal;
 
     public IncidenciaDTO(String tipoIncidencia, int cantidadTotal) {
