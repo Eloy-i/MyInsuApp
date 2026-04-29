@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+    <xs:element name="Informe">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Paciente" type="TipoPaciente"/>
+                <xs:element name="ResumenInyecciones" type="TipoResumen"/>
+                <xs:element name="Zonas" type="TipoZonas"/>
+            </xs:sequence>
+            <xs:attribute name="fecha" type="xs:date" use="required"/>
+            <xs:attribute name="rangoDias" type="xs:integer" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="TipoPaciente">
+        <xs:sequence>
+            <xs:element name="Nombre">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="3"/>
+                        <xs:maxLength value="100"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Edad">
+                <xs:simpleType>
+                    <xs:restriction base="xs:integer">
+                        <xs:minInclusive value="0"/>
+                        <xs:maxInclusive value="120"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="TipoDiabetes" type="EnumDiabetes"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TipoResumen">
+        <xs:sequence>
+            <xs:element name="TotalInsulinaUsada" type="DecimalDosPuntos"/>
+            <xs:element name="PromedioInsulinaDiaria" type="DecimalDosPuntos"/>
+            <xs:element name="DosisMaxima">
+                <xs:simpleType>
+                    <xs:restriction base="xs:decimal">
+                        <xs:minInclusive value="0.0"/>
+                        <xs:maxInclusive value="30.0"/>
+                        <xs:fractionDigits value="1"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="TotalInyecciones" type="xs:integer"/>
+            <xs:element name="TotalIncidencias" type="xs:integer"/>
+            <xs:element name="MediaInyeccionesDiarias" type="DecimalDosPuntos"/>
+            <xs:element name="ZonaMasUsada" type="EnumZonas"/>
+            <xs:element name="ZonaMasIncidencias" type="EnumZonas"/>
+            <xs:element name="PorcentajeIncidencias">
+                <xs:simpleType>
+                    <xs:restriction base="xs:decimal">
+                        <xs:minInclusive value="0.00"/>
+                        <xs:maxInclusive value="100.00"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TipoZonas">
+        <xs:sequence>
+            <xs:element name="Zona" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="EventoInyeccion" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:attribute name="tipo" type="EnumEventos" use="required"/>
+                                <xs:attribute name="cantidad" type="xs:integer" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="nombre" type="EnumZonas" use="required"/>
+                    <xs:attribute name="totalInyecciones" type="xs:integer" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="EnumDiabetes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Tipo 1"/>
+            <xs:enumeration value="Tipo 2"/>
+            <xs:enumeration value="LADA"/>
+            <xs:enumeration value="Gestacional"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EnumZonas">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="abdomen izquierdo"/>
+            <xs:enumeration value="abdomen derecho"/>
+            <xs:enumeration value="muslo izquierdo"/>
+            <xs:enumeration value="muslo derecho"/>
+            <xs:enumeration value="gluteo izquierdo"/>
+            <xs:enumeration value="gluteo derecho"/>
+            <xs:enumeration value="triceps izquierdo"/>
+            <xs:enumeration value="triceps derecho"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EnumEventos">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="sangrado"/>
+            <xs:enumeration value="dolor agudo"/>
+            <xs:enumeration value="bola insulina"/>
+            <xs:enumeration value="Sin incidencia"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DecimalDosPuntos">
+        <xs:restriction base="xs:decimal">
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
+

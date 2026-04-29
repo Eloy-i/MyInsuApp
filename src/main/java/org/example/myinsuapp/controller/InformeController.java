@@ -6,22 +6,24 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import org.example.myinsuapp.model.dto.IncidenciaDTO;
 import org.example.myinsuapp.model.dto.InformeMedicoDTO;
 import org.example.myinsuapp.model.dto.ResumenInyeccionesDTO;
 import org.example.myinsuapp.model.dto.ZonaUsoDTO;
 import org.example.myinsuapp.service.InformeService;
+import org.example.myinsuapp.util.XmlExportUtil;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InformeController implements Initializable {
 
     private InformeService informeService;
+
+    private XmlExportUtil xmlExportUtil;
 
     ObservableList<PieChart.Data> listaQuesitos;
 
@@ -78,6 +80,7 @@ public class InformeController implements Initializable {
 
     private void instances() {
         informeService = new InformeService();
+        xmlExportUtil = new XmlExportUtil();
         listaQuesitos = FXCollections.observableArrayList();
     }
 
@@ -89,7 +92,6 @@ public class InformeController implements Initializable {
 
     private void actions() {
         btnCargarDatos.setOnAction(event->{
-
             int dias = rangoDiasCombo.getValue();
             try {
                 InformeMedicoDTO informeMedicoDTO = informeService.generarInforme(dias);
@@ -113,6 +115,34 @@ public class InformeController implements Initializable {
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            }
+        });
+
+        btnExportarXML.setOnAction(event->{
+            int dias = rangoDiasCombo.getValue();
+
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar exportación");
+            confirmacion.setHeaderText("Generación de informe XML");
+            confirmacion.setContentText("¿Deseas exportar los datos de los últimos " + dias + " días?");
+
+            Optional<ButtonType> respuesta = confirmacion.showAndWait();
+            if (respuesta.isPresent() && respuesta.get() == ButtonType.OK){
+                try {
+                    InformeMedicoDTO informeMedicoDTO = informeService.generarInforme(dias);
+                    xmlExportUtil.exportarXmlInforme(informeMedicoDTO);
+
+                    // Alerta de éxito con el enlace que montamos antes
+                    Alert alertExito = new Alert(Alert.AlertType.INFORMATION);
+                    alertExito.setTitle("Informe exportado");
+                    alertExito.setHeaderText("Informe exportado con éxito");
+                    alertExito.showAndWait();
+
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
 
         });

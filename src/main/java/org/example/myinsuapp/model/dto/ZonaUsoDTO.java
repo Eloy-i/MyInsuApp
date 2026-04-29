@@ -13,7 +13,7 @@ public class ZonaUsoDTO {
     private String nombreZona;
     @XmlAttribute(name = "totalInyecciones")
     private int usoTotal;
-    @XmlElement(name = "Incidencia")
+    @XmlElement(name = "EventoInyeccion")
     private List<IncidenciaDTO> listaIncidenciasZona;
 
 

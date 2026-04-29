@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Informe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fecha="2026-04-29" rangoDias="30" xsi:noNamespaceSchemaLocation="esquema.xsd">
+    <Paciente>
+        <Nombre>Demo Demirez</Nombre>
+        <Edad>26</Edad>
+        <TipoDiabetes>LADA</TipoDiabetes>
+    </Paciente>
+    <ResumenInyecciones>
+        <TotalInsulinaUsada>238.5</TotalInsulinaUsada>
+        <PromedioInsulinaDiaria>7.95</PromedioInsulinaDiaria>
+        <DosisMaxima>12.5</DosisMaxima>
+        <TotalInyecciones>47</TotalInyecciones>
+        <TotalIncidencias>10</TotalIncidencias>
+        <MediaInyeccionesDiarias>1.57</MediaInyeccionesDiarias>
+        <ZonaMasUsada>abdomen izquierdo</ZonaMasUsada>
+        <ZonaMasIncidencias>abdomen izquierdo</ZonaMasIncidencias>
+        <PorcentajeIncidencias>21.28</PorcentajeIncidencias>
+    </ResumenInyecciones>
+    <Zonas>
+        <Zona nombre="abdomen izquierdo" totalInyecciones="19">
+            <EventoInyeccion tipo="Sin incidencia" cantidad="16"/>
+            <EventoInyeccion tipo="dolor agudo" cantidad="1"/>
+            <EventoInyeccion tipo="sangrado" cantidad="2"/>
+        </Zona>
+        <Zona nombre="gluteo izquierdo" totalInyecciones="1">
+            <EventoInyeccion tipo="sangrado" cantidad="1"/>
+        </Zona>
+        <Zona nombre="muslo izquierdo" totalInyecciones="2">
+            <EventoInyeccion tipo="Sin incidencia" cantidad="2"/>
+        </Zona>
+        <Zona nombre="abdomen derecho" totalInyecciones="1">
+            <EventoInyeccion tipo="sangrado" cantidad="1"/>
+        </Zona>
+        <Zona nombre="muslo derecho" totalInyecciones="1">
+            <EventoInyeccion tipo="Sin incidencia" cantidad="1"/>
+        </Zona>
+        <Zona nombre="triceps derecho" totalInyecciones="4">
+            <EventoInyeccion tipo="Sin incidencia" cantidad="3"/>
+            <EventoInyeccion tipo="sangrado" cantidad="1"/>
+        </Zona>
+        <Zona nombre="triceps izquierdo" totalInyecciones="15">
+            <EventoInyeccion tipo="bola insulina" cantidad="1"/>
+            <EventoInyeccion tipo="Sin incidencia" cantidad="14"/>
+        </Zona>
+        <Zona nombre="gluteo derecho" totalInyecciones="4">
+            <EventoInyeccion tipo="bola insulina" cantidad="1"/>
+            <EventoInyeccion tipo="Sin incidencia" cantidad="1"/>
+            <EventoInyeccion tipo="dolor agudo" cantidad="1"/>
+            <EventoInyeccion tipo="sangrado" cantidad="1"/>
+        </Zona>
+    </Zonas>
+</Informe>
