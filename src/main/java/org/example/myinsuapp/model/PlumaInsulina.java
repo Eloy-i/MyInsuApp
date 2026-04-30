@@ -8,12 +8,15 @@ import java.time.LocalDate;
 
  Esta clase está diseñada con la previsión de evolucionar a una clase Abstracta.
  El objetivo futuro es aplicar herencia para crear subtipos específicos
- (InsulinaLenta, InsulinaRapida, InsulinaSemanal). Todos compartirán este patrón
+ (PlumaInsulinaLenta, PlumaInsulinaRapida, PlumaInsulinaSemanal, PlumaInsulinaPediatrica..). Todos compartirán este patrón
  de datos común, pero permitirán métodos con comportamientos
  propios
   */
 
 public class PlumaInsulina {
+
+    public static final int DEPOSITO_ESTANDAR = 300;
+
     private int idPluma;
     private int depositoInicial;
     private Usuario usuario;

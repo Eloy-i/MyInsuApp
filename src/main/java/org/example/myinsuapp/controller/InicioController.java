@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
+import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.model.PlumaInsulina;
 import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InyeccionService;
@@ -88,10 +89,10 @@ public class InicioController implements Initializable {
             try {
                 EstadoService.getInstance().iniciarPluma();
                 initGUI();
-            } catch (SQLException e) {
+            } catch (DataBaseException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("ERROR");
-                alert.setContentText("Personalizar errores");
+                alert.setContentText(e.getMessage());
                 alert.showAndWait();
             }
         });

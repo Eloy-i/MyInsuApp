@@ -3,6 +3,7 @@ package org.example.myinsuapp.service;
 import org.example.myinsuapp.dao.PlumaInsulinaDAO;
 import org.example.myinsuapp.dao.UsuarioDAO;
 import org.example.myinsuapp.dao.ZonaDAO;
+import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.model.PlumaInsulina;
 import org.example.myinsuapp.model.Usuario;
 import org.example.myinsuapp.model.Zona;
@@ -39,16 +40,15 @@ public class EstadoService {
 
     }
 
-    public void iniciarPluma() throws SQLException {
-        PlumaInsulinaDAO plumaInsulinaDAO = new PlumaInsulinaDAO();
-        if (plumaActiva != null){
-            plumaInsulinaDAO.desactivarPluma(plumaActiva.getIdPluma());
-        }
 
-        //TODO revisar esto que me parece redundante crear nueva y machacarla con get- seguro que hay algo mejor
-        plumaActiva = new PlumaInsulina(300, this.usuario, true, LocalDate.now());
-        plumaInsulinaDAO.insertPluma(plumaActiva);
-        plumaActiva = plumaInsulinaDAO.getPlumaActiva(this.usuario);
+    // El metodo de iniciar pluma llama a DAO que lanza una transacción que se encarga del UPDATE de la anterior e insertar la nueva en la bd.
+    public void iniciarPluma() throws DataBaseException {
+        PlumaInsulinaDAO plumaInsulinaDAO = new PlumaInsulinaDAO();
+        PlumaInsulina nuevaPluma = new PlumaInsulina(PlumaInsulina.DEPOSITO_ESTANDAR, this.usuario, true, LocalDate.now());
+        plumaInsulinaDAO.registrarPlumaNueva(nuevaPluma);
+
+        //No sé si tiene mucho sentido pero me parecía peligroso machacar la plumaActiva antes de que el DAO termine su función, por eso instancio una nueva e igualo.
+        plumaActiva = nuevaPluma;
 
     }
 

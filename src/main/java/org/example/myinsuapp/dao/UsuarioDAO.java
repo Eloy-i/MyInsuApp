@@ -2,6 +2,7 @@ package org.example.myinsuapp.dao;
 
 import org.example.myinsuapp.database.DBConnection;
 import org.example.myinsuapp.database.DBSchem;
+import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.model.TipoDiabetes;
 import org.example.myinsuapp.model.Usuario;
 
@@ -16,32 +17,46 @@ public class UsuarioDAO {
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
 
+    /*
+    La busqueda del usuario va a traer a mi usuario precargado para la demo. Como las voy a enmascarar con la interfaz
+    DBSchem te las iré dejando en comentarío superior a cada mét-odo para no volverte loco a ti y a mi mientras formate,
+    que luego hay unas querys que van a ser "graciosas" de formatear.
+
+        SELECT id_usuario, nombre, apellidos, fecha_nacimiento, tipo_diabetes
+        FROM usuario WHERE id_usuario = 1
+     */
+
     public Usuario getUsuario(){
         Usuario user = null;
         connection = DBConnection.getConnection();
-        String query = "SELECT * FROM "+ DBSchem.TAB_USUARIO;
+        String query = String.format("""
+                SELECT %s, %s, %s, %s, %s
+                FROM %s WHERE %s = ?""", DBSchem.COL_USER_ID, DBSchem.COL_USER_NOMBRE, DBSchem.COL_USER_APELL,
+                DBSchem.COL_USER_NACIMIENTO, DBSchem.COL_USER_DT,
+                DBSchem.TAB_USUARIO, DBSchem.COL_USER_ID);
 
         try {
             preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, 1); //Fuerzo la obtención de mi usuario precargado Demo Demirez.
             resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+            if (resultSet.next()){
                 int id = resultSet.getInt(DBSchem.COL_USER_ID);
                 String nombre = resultSet.getString(DBSchem.COL_USER_NOMBRE);
                 String apellido = resultSet.getString(DBSchem.COL_USER_APELL);
                 String tDiabetesString = resultSet.getString(DBSchem.COL_USER_DT);
-                TipoDiabetes tDiabetes = TipoDiabetes.valueOf(tDiabetesString); //Todo ajustar nombre de enums en base de datos para hacerlo coincidir
+                TipoDiabetes tDiabetes = TipoDiabetes.valueOf(tDiabetesString);
                 LocalDate fechaNacimiento = resultSet.getDate(DBSchem.COL_USER_NACIMIENTO).toLocalDate();
                 user = new Usuario(id, nombre, apellido, tDiabetes, fechaNacimiento);
             }
 
 
         } catch (SQLException e) {
-            //TODO pensar si crear excepciones personalizadas para que las recoja la vista
-            throw new RuntimeException(e);
+             throw new DataBaseException("Error conexión a acceder al usuario", e);
         }
-
         return user;
 
     }
+
+    // todo Si tengo tiempo a añadir una pantalla de identificación sencilla... lanzar quiery que compruebe nombre e id, por ejemplo.
 }
