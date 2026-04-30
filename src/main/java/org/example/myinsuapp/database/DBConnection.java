@@ -1,5 +1,7 @@
 package org.example.myinsuapp.database;
 
+import org.example.myinsuapp.exceptions.DataBaseException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,7 +32,7 @@ public class DBConnection {
         try {
             connection = DriverManager.getConnection(urlJDBC, user,pass);
         } catch (SQLException e){
-             throw new RuntimeException(); //todo preparar excepciones para un ALERT en javafx
+             throw new DataBaseException("Error de conexión. En local funcionaba, lo juro.", e );
         }
 
 
