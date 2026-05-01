@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import org.example.myinsuapp.controller.InicioController;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.service.EstadoService;
 
@@ -17,6 +18,8 @@ import java.util.ResourceBundle;
 public class MainViewController implements Initializable {
 
     private Parent inicioView, registroView, historicoView, informeView;
+
+    private InicioController inicioController;
 
     private boolean baseDatosCaida = false;
 
@@ -47,14 +50,18 @@ public class MainViewController implements Initializable {
     private void instances() {
         try {
             EstadoService.getInstance().cargaInicial();
-            inicioView = FXMLLoader.load(MainViewController.class.getResource("inicio-view.fxml"));
+
+            FXMLLoader cargaInicioVista = new FXMLLoader(getClass().getResource("inicio-view.fxml"));
+            inicioView = cargaInicioVista.load();
+            this.inicioController = cargaInicioVista.getController();
+
             registroView = FXMLLoader.load(MainViewController.class.getResource("registro-view.fxml"));
             historicoView = FXMLLoader.load(MainViewController.class.getResource("historico-view.fxml"));
             informeView = FXMLLoader.load(MainViewController.class.getResource("informe-view.fxml"));
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println(e.getMessage());;
         }catch (DataBaseException e) {
             baseDatosCaida = true;
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -89,7 +96,10 @@ public class MainViewController implements Initializable {
             btnHistorico.setDisable(true);
             btnInforme.setDisable(true);
         }else {
-            btnInicio.setOnAction(event -> mainBorderPane.setCenter(inicioView));
+            btnInicio.setOnAction(event -> {
+                mainBorderPane.setCenter(inicioView);
+                inicioController.initGUI();
+            });
             btnRegistro.setOnAction(event -> mainBorderPane.setCenter(registroView));
             btnHistorico.setOnAction(event -> mainBorderPane.setCenter(historicoView));
             btnInforme.setOnAction(event -> mainBorderPane.setCenter(informeView));

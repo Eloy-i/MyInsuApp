@@ -1,6 +1,7 @@
 package org.example.myinsuapp.dao;
 import org.example.myinsuapp.database.DBConnection;
 import org.example.myinsuapp.database.DBSchem;
+import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.model.Incidencia;
 import org.example.myinsuapp.model.Inyeccion;
 import org.example.myinsuapp.model.TipoIncidencia;
@@ -40,6 +41,165 @@ public class InyeccionDAO {
 
     }
 
+    // DELETE de inyección
+    public void borrarInyeccion(int idInyeccion) {
+
+        connection = DBConnection.getConnection();
+        String query = String.format("""
+                DELETE FROM %s
+                WHERE %s = ?
+                AND %s >= NOW() - INTERVAL 2 HOUR;""",
+                DBSchem.TAB_INYECCION,
+                DBSchem.COL_INY_ID,
+                DBSchem.COL_INY_FECHA
+        );
+
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, idInyeccion);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e){
+            throw new DataBaseException("Error de conexión con DB");
+        }
+
+    }
+
+
+
+    /*
+    Querie sin formateo (la he modificado un poco respecto al .sql ya que aquí no necesito tantos datos:
+          /*
+    Querie sin formateo:
+        SELECT
+            i.id_inyeccion, i.fecha_hora, i.dosis, i.id_zona,
+            inc.id_incidencia, inc.tipo_incidencia
+        FROM pluma_insulina pl
+        INNER JOIN inyeccion i ON i.id_plumaInsulina = pl.id_plumaInsulina
+        LEFT JOIN incidencia inc ON i.id_inyeccion = inc.id_inyeccion
+        WHERE pl.id_usuario = 1
+        AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+        ORDER BY i.fecha_hora DESC;
+     */
+
+    public List<Inyeccion>getInyeccionesRango(int dias, int idUser) throws DataBaseException {
+        List<Inyeccion> inyecciones = new ArrayList<>();
+        connection = DBConnection.getConnection();
+        String query = String.format("""
+                SELECT i.%s, i.%s, i.%s, i.%s,
+                       inc.%s, inc.%s
+                       FROM %s i
+                INNER JOIN %s pl ON i.%s = pl.%s
+                LEFT JOIN %s inc ON i.%s = inc.%s
+                WHERE pl.%s = ?
+                AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
+                ORDER BY i.%s DESC;""", DBSchem.COL_INY_ID, DBSchem.COL_INY_FECHA, DBSchem.COL_INY_DOSIS,
+                DBSchem.COL_INY_ZONA, DBSchem.COL_INC_ID, DBSchem.COL_INC_TIPO,
+                DBSchem.TAB_INYECCION,
+                DBSchem.TAB_PLUMA, DBSchem.COL_INY_PLUMA, DBSchem.COL_PLUMA_ID,
+                DBSchem.TAB_INCIDENCIA, DBSchem.COL_INY_ID, DBSchem.COL_INC_INY,
+                DBSchem.COL_PLUMA_USER,
+                DBSchem.COL_INY_FECHA, DBSchem.COL_INY_FECHA
+        );
+
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, idUser);
+            preparedStatement.setInt(2, dias);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
+                LocalDateTime fechaHora = resultSet.getObject(DBSchem.COL_INY_FECHA, LocalDateTime.class);
+                double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
+
+                /*
+                Explico esta parte... Como la busqueda era con left y quiero obtener inyecciones con o sin incidencias,
+                declaro Incidencia en null, pido al resultset que me entregue el resultado y dentro del if, si el resultado
+                no es nulo, pido el tipo de incidencia para crear el nuevo objeto. Si el resultado es nulo la dejo como tal
+                y lo controlo en la siguiente capa.
+                 */
+                Incidencia incidencia = null;
+                int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
+                if (!resultSet.wasNull()){
+                    TipoIncidencia tipoIncidencia = TipoIncidencia.desdeBD(resultSet.getString(DBSchem.COL_INC_TIPO));
+                    incidencia = new Incidencia(idIncidencia, tipoIncidencia);
+                }
+
+                int idZona = resultSet.getInt(DBSchem.COL_INY_ZONA);
+                Zona zona = EstadoService.getInstance().getZonaByID(idZona);
+                Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, zona, incidencia);
+                inyecciones.add(inyeccion);
+            }
+
+        } catch (SQLException e){
+            throw new DataBaseException("Error al acceder a la consulta en base de datos.", e);
+        }
+
+        return inyecciones;
+    }
+
+
+    /*
+    Querie sin formateo:
+        SELECT
+            i.id_inyeccion, i.fecha_hora, i.dosis, i.id_zona,
+            inc.id_incidencia, inc.tipo_incidencia
+        FROM pluma_insulina pl
+        INNER JOIN inyeccion i ON i.id_plumaInsulina = pl.id_plumaInsulina
+        INNER JOIN incidencia inc ON i.id_inyeccion = inc.id_inyeccion
+        WHERE pl.id_usuario = 1
+        AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+        ORDER BY i.fecha_hora DESC;
+     */
+    public List<Inyeccion> getInyeccionesIncidenciaRango (int dias, int idUsuario) throws DataBaseException {
+        List<Inyeccion> inyeccionesIncidencias = new ArrayList<>();
+        connection = DBConnection.getConnection();
+        String query = String.format("""
+                SELECT i.%s, i.%s, i.%s, i.%s,
+                       inc.%s, inc.%s
+                       FROM %s i
+                INNER JOIN %s pl ON i.%s = pl.%s
+                INNER JOIN %s inc ON i.%s = inc.%s
+                WHERE pl.%s = ?
+                AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
+                ORDER BY i.%s DESC;""", DBSchem.COL_INY_ID, DBSchem.COL_INY_FECHA, DBSchem.COL_INY_DOSIS,
+                DBSchem.COL_INY_ZONA, DBSchem.COL_INC_ID, DBSchem.COL_INC_TIPO,
+                DBSchem.TAB_INYECCION,
+                DBSchem.TAB_PLUMA, DBSchem.COL_INY_PLUMA, DBSchem.COL_PLUMA_ID,
+                DBSchem.TAB_INCIDENCIA, DBSchem.COL_INY_ID, DBSchem.COL_INC_INY,
+                DBSchem.COL_PLUMA_USER,
+                DBSchem.COL_INY_FECHA, DBSchem.COL_INY_FECHA
+        );
+
+        try {
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, idUsuario);
+            preparedStatement.setInt(2, dias);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
+                LocalDateTime fechaHora = resultSet.getObject(DBSchem.COL_INY_FECHA, LocalDateTime.class);
+                double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
+
+                //Datos para crear el objeto Incidencia dentro de Inyección
+                int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
+                TipoIncidencia tipoIncidencia = TipoIncidencia.desdeBD(resultSet.getString(DBSchem.COL_INC_TIPO));
+                Incidencia incidencia = new Incidencia(idIncidencia, tipoIncidencia);
+                //A la zona accedo mediante id
+                int idZona = resultSet.getInt(DBSchem.COL_INY_ZONA);
+                Zona zona = EstadoService.getInstance().getZonaByID(idZona);
+
+                Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, zona, incidencia);
+                inyeccionesIncidencias.add(inyeccion);
+            }
+        } catch (SQLException e){
+            throw new DataBaseException("Error al acceder a la consulta en base de datos.", e);
+        }
+
+        return inyeccionesIncidencias;
+    }
+
     public double getTotalDosisPorPluma(int idPluma) throws SQLException {
         connection = DBConnection.getConnection();
         String query = "SELECT SUM(dosis) FROM inyeccion WHERE id_plumaInsulina = ?";
@@ -53,126 +213,57 @@ public class InyeccionDAO {
         return 0;
     }
 
+    /*
+    Esta query es para obtener la última inyección registrada... le he añadido el control por fecha ya que habrás datos
+    cargados a "futuro".
 
-    //Todo esto debe recibir de JAva 7 o 30 días... Necesito además otro método si el usuario solo quiere ver sus incidencias
-    // TODO Composición coyons... necesito que Incidencias sea parte de Inyección en java para poder discriminar y usar el tableview y necesito que el query devuelva los objetos completos.
+         SELECT i.dosis, i.fecha_hora, z.id_zona
+                FROM pluma_insulina pl
+                INNER JOIN inyeccion i
+                ON i.id_plumaInsulina = pl.id_plumaInsulina
+                INNER JOIN zona z ON z.id_zona = i.id_zona
+                WHERE pl.id_usuario = 1 and i.fecha_hora <= NOW()
+                ORDER BY i.fecha_hora DESC
+                LIMIT 1
+     */
 
-    public List<Inyeccion>getInyeccionesRango(int dias) throws SQLException {
-        List<Inyeccion> inyecciones = new ArrayList<>();
-        connection = DBConnection.getConnection();
-        String query = String.format("""
-                SELECT i.%s, i.%s, i.%s,
-                z.%s, z.%s,
-                inc.%s, inc.%s
-                FROM %s i
-                LEFT JOIN %s inc ON i.%s = inc.%s
-                INNER JOIN %s z ON z.%s = i.%s
-                WHERE DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-                ORDER BY i.%s DESC;
-                """, DBSchem.COL_INY_ID, DBSchem.COL_INY_FECHA, DBSchem.COL_INY_DOSIS,
-                DBSchem.COL_ZONA_ID, DBSchem.COL_ZONA_NOMBRE,
-                DBSchem.COL_INC_ID, DBSchem.COL_INC_TIPO,
-                DBSchem.TAB_INYECCION,
-                DBSchem.TAB_INCIDENCIA, DBSchem.COL_INY_ID, DBSchem.COL_INC_INY,
-                DBSchem.TAB_ZONA, DBSchem.COL_ZONA_ID, DBSchem.COL_INY_ZONA,
-                DBSchem.COL_INY_FECHA,
-                DBSchem.COL_INY_FECHA);
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, dias);
-        resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()){
-            int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
-            LocalDateTime fechaHora = resultSet.getObject(DBSchem.COL_INY_FECHA, LocalDateTime.class);
-            double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
-            int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
-            int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
-            Incidencia incidencia = null;
-            if (!resultSet.wasNull()){
-                TipoIncidencia tipoIncidencia = TipoIncidencia.desdeBD(resultSet.getString(DBSchem.COL_INC_TIPO));
-                incidencia = new Incidencia(idIncidencia, tipoIncidencia);
-            }
-            Zona zona = EstadoService.getInstance().getZonaByID(idZona);
-            Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, zona, incidencia);
-            inyecciones.add(inyeccion);
-        }
-        return inyecciones;
-    }
-
-    public List<Inyeccion> getInyeccionesIncidenciaRango (int dias) throws SQLException {
-        List<Inyeccion> inyeccionesIncidencias = new ArrayList<>();
-        connection = DBConnection.getConnection();
-        String query = """
-             SELECT 
-             i.id_inyeccion, i.fecha_hora, i.dosis, 
-             z.id_zona, z.zona_cuerpo, 
-             inc.id_incidencia, inc.tipo_incidencia
-            FROM inyeccion i
-            INNER JOIN incidencia inc
-            ON i.id_inyeccion = inc.id_inyeccion
-            INNER JOIN zona z
-            ON z.id_zona = i.id_zona
-            WHERE DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-            ORDER BY i.fecha_hora DESC;""";
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, dias);
-        resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()){
-            int idInyeccion = resultSet.getInt(DBSchem.COL_INY_ID);
-            LocalDateTime fechaHora = resultSet.getObject(DBSchem.COL_INY_FECHA, LocalDateTime.class);
-            double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
-            int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
-            int idIncidencia = resultSet.getInt(DBSchem.COL_INC_ID);
-            TipoIncidencia tipoIncidencia = TipoIncidencia.desdeBD(resultSet.getString(DBSchem.COL_INC_TIPO));
-            Incidencia incidencia = new Incidencia(idIncidencia, tipoIncidencia);
-            Zona zona = EstadoService.getInstance().getZonaByID(idZona);
-            Inyeccion inyeccion = new Inyeccion(idInyeccion, dosis, fechaHora, zona, incidencia);
-            inyeccionesIncidencias.add(inyeccion);
-        }
-        return inyeccionesIncidencias;
-    }
-
-    public Inyeccion getUltimaInyeccion(int idPluma) throws SQLException {
+    public Inyeccion getUltimaInyeccion(int idUser) {
         Inyeccion inyeccion = null;
         connection = DBConnection.getConnection();
-        String query = """
-                SELECT i.dosis, i.fecha_hora, z.id_zona
-                FROM inyeccion i
-                INNER JOIN zona z ON z.id_zona = i.id_zona
-                WHERE i.id_plumaInsulina = ?
-                ORDER BY i.fecha_hora DESC
-                LIMIT 1""";
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, idPluma);
-        resultSet = preparedStatement.executeQuery();
+        String query = String.format("""
+                SELECT i.%s, i.%s, z.%s
+                        FROM %s pl
+                        INNER JOIN %s i ON i.%s = pl.%s
+                        INNER JOIN %s z ON z.%s = i.%s
+                        WHERE pl.%s = ? AND i.%s <= NOW()
+                        ORDER BY i.%s DESC
+                        LIMIT 1;""", DBSchem.COL_INY_DOSIS, DBSchem.COL_INY_FECHA, DBSchem.COL_ZONA_ID,
+                DBSchem.TAB_PLUMA,
+                DBSchem.TAB_INYECCION, DBSchem.COL_INY_PLUMA, DBSchem.COL_PLUMA_ID,
+                DBSchem.TAB_ZONA, DBSchem.COL_ZONA_ID, DBSchem.COL_INY_ZONA,
+                DBSchem.COL_PLUMA_USER, DBSchem.COL_INY_FECHA,
+                DBSchem.COL_INY_FECHA);
 
-        if (resultSet.next()){
-            double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
-            LocalDateTime localDateTime = (LocalDateTime) resultSet.getObject(DBSchem.COL_INY_FECHA);
-            int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
-            Zona zona = EstadoService.getInstance().getZonaByID(idZona);
-            inyeccion = new Inyeccion(dosis, localDateTime, zona);
+        try {
+            preparedStatement = connection.prepareStatement(query);
 
+            preparedStatement.setInt(1, idUser);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()){
+                double dosis = resultSet.getDouble(DBSchem.COL_INY_DOSIS);
+                LocalDateTime localDateTime = (LocalDateTime) resultSet.getObject(DBSchem.COL_INY_FECHA);
+                int idZona = resultSet.getInt(DBSchem.COL_ZONA_ID);
+                Zona zona = EstadoService.getInstance().getZonaByID(idZona);
+                inyeccion = new Inyeccion(dosis, localDateTime, zona);
+
+            }
+        } catch (SQLException e) {
+            throw new DataBaseException("Error de conexión", e);
         }
 
         return inyeccion;
 
-    }
-
-    public void borrarInyeccion(Inyeccion inyeccion) throws SQLException {
-        int idInyeccion = inyeccion.getIdInyeccion();
-        connection = DBConnection.getConnection();
-        String query = """
-                DELETE FROM inyeccion
-                WHERE id_inyeccion = ?
-                AND fecha_hora >= NOW() - INTERVAL 2 HOUR;""";
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, idInyeccion);
-        preparedStatement.executeUpdate();
     }
 
     /*

@@ -104,9 +104,6 @@ public class RegistroController implements Initializable {
 
         unidadesSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 30, 0.0, 0.5));
 
-
-
-
     }
 
     private void actions() {

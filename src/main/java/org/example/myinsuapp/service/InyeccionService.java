@@ -2,11 +2,12 @@ package org.example.myinsuapp.service;
 
 import org.example.myinsuapp.dao.IncidenciaDAO;
 import org.example.myinsuapp.dao.InyeccionDAO;
+import org.example.myinsuapp.exceptions.DataBaseException;
+import org.example.myinsuapp.exceptions.ReglaInyeccionException;
 import org.example.myinsuapp.model.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -20,28 +21,9 @@ public class InyeccionService {
         this.incidenciaDAO = new IncidenciaDAO();
     }
 
-    public String ultimaInyeccionTexto(PlumaInsulina pluma) {
-        try {
-            if (pluma == null) {
-                throw new RuntimeException("No hay pluma activa");
-            }
-
-            Inyeccion inyeccion = inyeccionDAO.getUltimaInyeccion(pluma.getIdPluma());
-
-            if (inyeccion == null) {
-                throw new RuntimeException("Aún no hay dosis registradas");
-            }
-
-            DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("dd MMM 'a las' HH:mm");
-            return String.format("%.1f unidades en %s el %s",
-                    inyeccion.getDosis(),
-                    inyeccion.getZona().getZonaCuerpo(),
-                    inyeccion.getHoraInyeccion().format(formatoHora));
-
-        } catch (SQLException e) {
-            System.err.println("Error en BD: " + e.getMessage());
-            throw new RuntimeException("Error al conectar con la base de datos");
-        }
+    public Inyeccion ultimaInyeccion(int idUser) {
+        Inyeccion inyeccion = inyeccionDAO.getUltimaInyeccion(idUser);
+        return inyeccion;
     }
 
     public double getUnidadesUsadasPluma(PlumaInsulina pluma) {
@@ -98,33 +80,37 @@ public class InyeccionService {
 
     }
 
-    public List<Inyeccion> listaInyecciones(int dias) {
-        try {
-            return inyeccionDAO.getInyeccionesRango(dias);
-        } catch (SQLException e) {
-            throw new RuntimeException(e); //capturar o lanzar personalizada?
-        }
+    /*
+    El siguiente bloque de tres métod.os relacionados con las inyecciones están relacionados con el controlador de
+    vista HistorialController.
+    Las dos primeras se encargan de recoger una lista de inyecciones. La primera sin discriminar
+    salvo por rango y usuario y la segunda unicamente aquellas con incidencia.
+
+    El tercer metodo permite aplicar el DELETE y he aprovechado para añadir una capa de control que no permita un borrado
+    si la inyección tiene más de 2 horas, para no perder datos historicos pero si permitir un borrado inmediato.
+     */
+
+    public List<Inyeccion> listaInyecciones(int dias, int idUsuario) throws DataBaseException{
+
+        return inyeccionDAO.getInyeccionesRango(dias, idUsuario);
+
     }
 
-    public List<Inyeccion> listaInyeccionesConIncidencia(int dias) {
-        try {
-            return inyeccionDAO.getInyeccionesIncidenciaRango(dias);
-        } catch (SQLException e) {
-            throw new RuntimeException(e); //capturar o lanzar personalizada?
-        }
+    public List<Inyeccion> listaInyeccionesConIncidencia(int dias, int idUsuario) throws DataBaseException {
+
+        return inyeccionDAO.getInyeccionesIncidenciaRango(dias, idUsuario);
+
     }
 
-    public void eliminarInyeccion(Inyeccion inyeccion){
+    public void eliminarInyeccion(Inyeccion inyeccion) throws DataBaseException, ReglaInyeccionException{
         long horasPasadas = ChronoUnit.HOURS.between(inyeccion.getHoraInyeccion(), LocalDateTime.now());
 
         if (horasPasadas > 2){
-            throw new RuntimeException("Tiempo pasado... Lanzar excepción propia.");
+            throw new ReglaInyeccionException("No es posible borrar registros pasadas las dos horas.");
         }
-        try {
-            inyeccionDAO.borrarInyeccion(inyeccion);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+        inyeccionDAO.borrarInyeccion(inyeccion.getIdInyeccion());
+
 
     }
 

@@ -7,22 +7,26 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.example.myinsuapp.exceptions.DataBaseException;
+import org.example.myinsuapp.exceptions.ReglaInyeccionException;
 import org.example.myinsuapp.model.Incidencia;
 import org.example.myinsuapp.model.Inyeccion;
+import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InyeccionService;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class HistoricoController implements Initializable {
 
-    ObservableList<Inyeccion> listaIyecciones;
+    private ObservableList<Inyeccion> listaIyecciones;
 
-    InyeccionService inyeccionService;
+    private InyeccionService inyeccionService;
 
     @FXML
     private Button btnVerHistorial;
@@ -98,25 +102,48 @@ public class HistoricoController implements Initializable {
     }
 
     private void actions() {
+        Usuario usuario = EstadoService.getInstance().getUsuario();
 
         btnVerHistorial.setOnAction(event ->{
             listaIyecciones.clear();
             int dias = comboRango.getValue();
-           if (incidenciaCheck.isSelected()){
-               listaIyecciones.addAll(inyeccionService.listaInyeccionesConIncidencia(dias));
-           }else {
-               listaIyecciones.addAll(inyeccionService.listaInyecciones(dias));
-           }
+            try {
+                if (incidenciaCheck.isSelected()){
+                    listaIyecciones.addAll(inyeccionService.listaInyeccionesConIncidencia(dias, usuario.getIdUsuario()));
+                }else {
+                    listaIyecciones.addAll(inyeccionService.listaInyecciones(dias, usuario.getIdUsuario()));
+                }
+            } catch (DataBaseException e){
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Error de conexión");
+                error.setContentText(e.getMessage());
+                error.showAndWait();
+            }
+
         });
 
         btnEliminar.setOnAction(event -> {
             Inyeccion inyeccion = tableView.getSelectionModel().getSelectedItem();
-
             if (inyeccion != null){
-                try {
-                    inyeccionService.eliminarInyeccion(inyeccion);
-                } catch (RuntimeException e) {
-                    throw new RuntimeException(e);
+                Alert confirmar = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmar.setTitle("Confirmación de borrado");
+                confirmar.setContentText("¿Deseas borrar la Inyección seleccionada?");
+                Optional<ButtonType> respuesta = confirmar.showAndWait();
+                if (respuesta.isPresent() && respuesta.get() == ButtonType.OK){
+                    try {
+                        inyeccionService.eliminarInyeccion(inyeccion);
+                        listaIyecciones.remove(inyeccion);
+                    } catch (ReglaInyeccionException e) {
+                        Alert informacion = new Alert(Alert.AlertType.INFORMATION);
+                        informacion.setTitle("Borrado no permitido");
+                        informacion.setContentText(e.getMessage());
+                        informacion.showAndWait();
+                    } catch (DataBaseException e){
+                        Alert error = new Alert(Alert.AlertType.ERROR);
+                        error.setTitle("Error de conexión");
+                        error.setContentText(e.getMessage());
+                        error.showAndWait();
+                    }
                 }
             }
         });

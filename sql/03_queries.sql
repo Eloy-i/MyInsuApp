@@ -11,22 +11,31 @@ WHERE pl.id_usuario = 1
 ORDER BY i.fecha_hora DESC
 LIMIT 1;
 
--- Fecha, hora, unidades, zona y incidencia (haya o no)-> Left Join
+-- Inyecciones en rango haya o no incidencia con Left Join... Me he visto obligado a añadir limite con NOW para evitar posibles datos futuros que cargue
 SELECT
-    i.id_inyeccion,
-    i.fecha_hora,
-    i.dosis,
-    z.id_zona,
-    z.zona_cuerpo,
-    inc.id_incidencia,
-    inc.tipo_incidencia
-FROM inyeccion i
-INNER JOIN pluma_insulina pl ON i.id_plumaInsulina = pl.id_plumaInsulina
-INNER JOIN zona z ON i.id_zona = z.id_zona
-LEFT JOIN incidencia inc ON i.id_inyeccion = inc.id_inyeccion
-WHERE pl.id_usuario = ?
-  AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-ORDER BY i.fecha_hora DESC;
+    i.id_inyeccion, i.fecha_hora, i.dosis,
+    z.id_zona, z.zona_cuerpo,
+    inc.id_incidencia, inc.tipo_incidencia
+ FROM pluma_insulina pl
+ INNER JOIN inyeccion i ON i.id_plumaInsulina = pl.id_plumaInsulina
+ INNER JOIN zona z ON i.id_zona = z.id_zona
+ LEFT JOIN incidencia inc ON i.id_inyeccion = inc.id_inyeccion
+ WHERE pl.id_usuario = 1
+ AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+ ORDER BY i.fecha_hora DESC;
+
+-- Igual que el anterior pero únicamente me traigo inyecciones con incidencia.
+SELECT
+    i.id_inyeccion, i.fecha_hora, i.dosis,
+    z.id_zona, z.zona_cuerpo,
+    inc.id_incidencia, inc.tipo_incidencia
+ FROM pluma_insulina pl
+ INNER JOIN inyeccion i ON i.id_plumaInsulina = pl.id_plumaInsulina
+ INNER JOIN zona z ON i.id_zona = z.id_zona
+ INNER JOIN incidencia inc ON i.id_inyeccion = inc.id_inyeccion
+ WHERE pl.id_usuario = 1
+ AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+ ORDER BY i.fecha_hora DESC;
 
 -- Borrado de inyección controlando que no hayan pasado mas de 2 horas del registro. A su vez borra incidencia gracias al on delete cascade que pusé en esa tabla
 DELETE i FROM inyeccion i
@@ -160,3 +169,15 @@ ORDER BY z.zona_cuerpo, total DESC;
 UPDATE Pluma_Insulina
 SET activo = 0
 WHERE id_usuario = 1 AND activo = 1;
+
+
+-- Ultima inyección del usuario
+
+ SELECT i.dosis, i.fecha_hora, z.id_zona
+                FROM pluma_insulina pl
+                INNER JOIN inyeccion i
+                ON i.id_plumaInsulina = pl.id_plumaInsulina
+                INNER JOIN zona z ON z.id_zona = i.id_zona
+                WHERE pl.id_usuario = 1
+                ORDER BY i.fecha_hora DESC
+                LIMIT 1

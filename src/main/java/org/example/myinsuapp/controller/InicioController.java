@@ -1,28 +1,27 @@
 package org.example.myinsuapp.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import org.example.myinsuapp.exceptions.DataBaseException;
+import org.example.myinsuapp.model.Inyeccion;
 import org.example.myinsuapp.model.PlumaInsulina;
 import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InyeccionService;
 
 import java.net.URL;
-import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class InicioController implements Initializable {
 
-    InyeccionService inyeccionService;
+    private InyeccionService inyeccionService;
     @FXML
     private Button btnIniciarPluma;
 
     @FXML
-    private Label diasRestantesLabel;
+    private Label udRegistradasLabel;
 
     @FXML
     private Label fechaLabel;
@@ -37,10 +36,10 @@ public class InicioController implements Initializable {
     private Label tipoDTLabel;
 
     @FXML
-    private Label udRestantesLabel;
+    private Label diasRestantesLabel;
 
     @FXML
-    private ProgressBar udRestantesProgBar;
+    private ProgressBar diasRestantesBar;
 
     @FXML
     private Label ultDosisLabel;
@@ -54,30 +53,26 @@ public class InicioController implements Initializable {
     }
 
     private void instances() {
-
         inyeccionService = new InyeccionService();
     }
 
-    private void initGUI() {
+    public void initGUI() {
         PlumaInsulina plumaActiva = EstadoService.getInstance().getPlumaActiva();
         nombreLabel.setText(EstadoService.getInstance().getUsuario().getNombre());
         tipoDTLabel.setText(EstadoService.getInstance().getUsuario().getTipoDiabetes().toString());
+        ultDosisLabel.setText(ultimaInyeccionTexto());
+
         if (plumaActiva != null) {
             fechaLabel.setText(EstadoService.getInstance().getPlumaActiva().getFechaApertura().toString());
 
-            double porcentajeRestante = inyeccionService.getPorcentajeRestantePluma(plumaActiva);
-            udRestantesProgBar.setProgress(porcentajeRestante);
-
             double udUsadas = inyeccionService.getUnidadesUsadasPluma(plumaActiva);
-            udRestantesLabel.setText(udUsadas + " unidades");
+            udRegistradasLabel.setText(udUsadas + " unidades");
 
-            try {
-                ultDosisLabel.setText(inyeccionService.ultimaInyeccionTexto(plumaActiva));
+            long diasRestantes = plumaActiva.diasRestantes();
+            diasRestantesLabel.setText(diasRestantes + " días");
 
+            comportamientoProgressBar(diasRestantes);
 
-            } catch (RuntimeException e) {
-                ultDosisLabel.setText("RECURDAR ARREGLAR LA QUERY PARA QUE NO SE VINCULE A LA PLUMA, QUE SOY IDIOTA");
-            }
         }
 
 
@@ -86,16 +81,47 @@ public class InicioController implements Initializable {
 
     private void actions() {
         btnIniciarPluma.setOnAction(event ->{
-            try {
-                EstadoService.getInstance().iniciarPluma();
-                initGUI();
-            } catch (DataBaseException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("ERROR");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Iniciar nueva Pluma");
+            confirmacion.setContentText("Al iniciar nueva pluma la anterior será dada de baja. ¿Estás de acuerdo?");
+            Optional<ButtonType> respuesta = confirmacion.showAndWait();
+
+            if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
+
+                try {
+                    EstadoService.getInstance().iniciarPluma();
+                    initGUI();
+                } catch (DataBaseException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                }
             }
         });
 
     }
+
+    private void comportamientoProgressBar(long dias){
+
+        double procentajeRestante = dias / 30.0;
+        diasRestantesBar.setProgress(procentajeRestante);
+    }
+
+    public String ultimaInyeccionTexto() {
+
+        Inyeccion inyeccion = inyeccionService.ultimaInyeccion(EstadoService.getInstance().getUsuario().getIdUsuario());
+
+
+        if (inyeccion == null) {
+            return "Aún no hay dosis registradas";
+        }
+
+        DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("dd MMM 'a las' HH:mm");
+        return String.format("%.1f unidades en %s el %s",
+                inyeccion.getDosis(),
+                inyeccion.getZona().getZonaCuerpo(),
+                inyeccion.getHoraInyeccion().format(formatoHora));
+    }
+
 }
