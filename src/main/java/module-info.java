@@ -4,7 +4,7 @@ module org.example.myinsuapp {
     requires java.sql;
     requires javafx.base;
     requires jakarta.xml.bind;
-
+    requires javafx.graphics;
 
 
     opens org.example.myinsuapp to javafx.fxml;
