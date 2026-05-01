@@ -10,9 +10,6 @@ public class DBConnection {
 
     private static Connection connection;
 
-    //TODO lanzar excepcion o capturar -> Borja comenta que si no se puede resolver por quien sa la app mejor capturar aquí.
-
-
     public static Connection getConnection() {
         if (connection == null){
             newConnection();

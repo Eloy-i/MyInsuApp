@@ -3,8 +3,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.service.EstadoService;
 
 import java.io.IOException;
@@ -14,7 +16,9 @@ import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
-    Parent inicioView, registroView, historicoView, informeView;
+    private Parent inicioView, registroView, historicoView, informeView;
+
+    private boolean baseDatosCaida = false;
 
     @FXML
     private Button btnHistorico;
@@ -48,26 +52,48 @@ public class MainViewController implements Initializable {
             historicoView = FXMLLoader.load(MainViewController.class.getResource("historico-view.fxml"));
             informeView = FXMLLoader.load(MainViewController.class.getResource("informe-view.fxml"));
 
+
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
+        }catch (DataBaseException e) {
+            baseDatosCaida = true;
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error de conexión");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+
         }
 
     }
 
 
     private void initGUI() {
-        mainBorderPane.setCenter(inicioView);
+
+        if (baseDatosCaida){
+            try {
+                mainBorderPane.setCenter(FXMLLoader.load(getClass().getResource("en-local-funcionaba-view.fxml")));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            mainBorderPane.setCenter(inicioView);
+        }
     }
 
 
 
     private void actions() {
-        btnInicio.setOnAction(event -> mainBorderPane.setCenter(inicioView));
-        btnRegistro.setOnAction(event -> mainBorderPane.setCenter(registroView));
-        btnHistorico.setOnAction(event-> mainBorderPane.setCenter(historicoView));
-        btnInforme.setOnAction( event -> mainBorderPane.setCenter(informeView));
+        if (baseDatosCaida){
+            btnInicio.setDisable(true);
+            btnRegistro.setDisable(true);
+            btnHistorico.setDisable(true);
+            btnInforme.setDisable(true);
+        }else {
+            btnInicio.setOnAction(event -> mainBorderPane.setCenter(inicioView));
+            btnRegistro.setOnAction(event -> mainBorderPane.setCenter(registroView));
+            btnHistorico.setOnAction(event -> mainBorderPane.setCenter(historicoView));
+            btnInforme.setOnAction(event -> mainBorderPane.setCenter(informeView));
+        }
 
     }
 }

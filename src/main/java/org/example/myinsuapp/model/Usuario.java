@@ -11,9 +11,7 @@ public class Usuario {
     private TipoDiabetes tipoDiabetes ;
     private LocalDate fechaNacimiento;
 
-    public Usuario(){
-
-    }
+    public Usuario(){}
 
     public Usuario(int idUsuario, String nombre, String apellidos, TipoDiabetes tipoDiabetes, LocalDate fechaNacimiento) {
         this.idUsuario = idUsuario;

@@ -1,5 +1,6 @@
 package org.example.myinsuapp.model;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 /*
  MVP Fase 1: Entidad base para la gestión de plumas de insulina.
@@ -9,8 +10,7 @@ import java.time.LocalDate;
  Esta clase está diseñada con la previsión de evolucionar a una clase Abstracta.
  El objetivo futuro es aplicar herencia para crear subtipos específicos
  (PlumaInsulinaLenta, PlumaInsulinaRapida, PlumaInsulinaSemanal, PlumaInsulinaPediatrica..). Todos compartirán este patrón
- de datos común, pero permitirán métodos con comportamientos
- propios
+ de datos común, pero permitirán métodos con comportamientos propios.
   */
 
 public class PlumaInsulina {
@@ -31,6 +31,19 @@ public class PlumaInsulina {
         this.usuario = usuario;
         this.activo = activo;
         this.fechaApertura = fechaApertura;
+    }
+
+
+    /*
+    Pequeño métod.o de comportamiento de la pluma, por eso lo he puesto en la capa model y no en una service.
+    La recomendación es que pasados 30 días se tire si le queda contenido ya que pierde efecto, controlo que no de negativo.
+     */
+    public long diasRestantes(){
+        long diasAbierta = ChronoUnit.DAYS.between(this.fechaApertura, LocalDate.now());
+        if (diasAbierta >= 30){
+           return 0;
+        }
+        return 30 - diasAbierta;
     }
 
     //Constructor para Select

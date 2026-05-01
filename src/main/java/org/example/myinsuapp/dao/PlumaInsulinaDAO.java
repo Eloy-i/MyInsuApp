@@ -47,6 +47,7 @@ public class PlumaInsulinaDAO {
             throw new DataBaseException("Error a cargar la Pluma de insulina activa", e);
         }
         return plumaInsulina;
+
     }
 
     /*
@@ -122,30 +123,4 @@ public class PlumaInsulinaDAO {
         }
     }
 
-
-    public void desactivarPluma(int idPluma) throws SQLException {
-        connection = DBConnection.getConnection();
-        String query = String.format("UPDATE %s SET %s = false WHERE %s = ?",
-                DBSchem.TAB_PLUMA, DBSchem.COL_PLUMA_ACTIVO, DBSchem.COL_PLUMA_ID);
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, idPluma);
-        preparedStatement.executeUpdate();
-    }
-
-    public void insertPluma(PlumaInsulina plumaInsulina) throws SQLException {
-        connection = DBConnection.getConnection();
-        String query = String.format("INSERT INTO %s (%s, %s, %s, %s) " +
-                "VALUES (?, ?, ?, ?);",
-                DBSchem.TAB_PLUMA, DBSchem.COL_PLUMA_USER, DBSchem.COL_PLUMA_DEPOSITO,
-                DBSchem.COL_PLUMA_ACTIVO, DBSchem.COL_PLUMA_FECHA);
-
-        preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, plumaInsulina.getUsuario().getIdUsuario());
-        preparedStatement.setInt(2, plumaInsulina.getDepositoInicial());
-        preparedStatement.setBoolean(3, plumaInsulina.isActivo());
-        preparedStatement.setDate(4, Date.valueOf(plumaInsulina.getFechaApertura()));
-        preparedStatement.executeUpdate();
-
-    }
 }
