@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.model.PlumaInsulina;
 import org.example.myinsuapp.model.TipoIncidencia;
 import org.example.myinsuapp.model.Zona;
@@ -136,14 +137,12 @@ public class RegistroController implements Initializable {
                 alert.setTitle("Registro correcto");
                 alert.setContentText("El registro se ha realizado correctamente");
                 alert.showAndWait();
-            } catch (SQLException e) {
-                System.out.println("Pensar como gestionar errores con personalizadas");
-                System.out.println(e.getMessage());
-            } catch (Exception e){
-                System.out.println(e.getMessage());
+            } catch (DataBaseException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error de conexión");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
             }
-
-
         });
 
         grupoZonas.selectedToggleProperty().addListener((observableValue,

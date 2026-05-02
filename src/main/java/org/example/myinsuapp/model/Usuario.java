@@ -1,6 +1,5 @@
 package org.example.myinsuapp.model;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
+
 
 import java.time.LocalDate;
 

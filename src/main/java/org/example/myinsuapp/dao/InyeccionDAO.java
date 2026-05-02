@@ -18,26 +18,91 @@ public class InyeccionDAO {
     private Connection connection;
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
+    //Todo -> pendiente para futura optimización: try-with-resources era muy útil con los flujos de archivos
+    /*
+    Originalmente tenía una clase IncidenciaDAO (eliminada ya) pero después de ver en BD las transacciones la operación de
+    insertar incidencia se hacía muy dependiente de la Inyeccion y me parece perfecta para una transacción.
+    el metodo insertInyección es el original que manda a la bd inyecciones sin incidenciasal que le he suprimido
+    el obtener los id puesto que ya no lo necesito.
 
-    //TODO Revisar si puedo hacer esta operación como parte de una transacción
-    public void insertInyeccion(Inyeccion inyeccion) throws SQLException {
+    He agregado un segundo metod.o en el que mediante transacción se guardan las inyecciones con incidencia.
+    Aclaro que podría haberlo controlado en un sólo métod.o discriminando if (incidencia != null) pero me parecía darle
+    responsabilidades al DAO que no le corresponden. Desde Service hago la distinción y decido a cual de los dos llamar.
+    Aunque repita levemente código, me ha parecido la mejor opción.
+
+     */
+    public void insertInyeccion(Inyeccion inyeccion) throws DataBaseException {
         connection = DBConnection.getConnection();
         String query = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?);",
                 DBSchem.TAB_INYECCION, DBSchem.COL_INY_PLUMA, DBSchem.COL_ZONA_ID,
                 DBSchem.COL_INY_DOSIS, DBSchem.COL_INY_FECHA);
 
-        preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        try {
+            preparedStatement = connection.prepareStatement(query);
 
-        preparedStatement.setInt(1, inyeccion.getPlumaInsulina().getIdPluma());
-        preparedStatement.setInt(2, inyeccion.getZona().getIdZona());
-        preparedStatement.setDouble(3, inyeccion.getDosis());
-        preparedStatement.setObject(4, inyeccion.getHoraInyeccion());
-        preparedStatement.executeUpdate();
-        resultSet = preparedStatement.getGeneratedKeys();
-        if (resultSet.next()){
-            inyeccion.setIdInyeccion(resultSet.getInt(1));
+            preparedStatement.setInt(1, inyeccion.getPlumaInsulina().getIdPluma());
+            preparedStatement.setInt(2, inyeccion.getZona().getIdZona());
+            preparedStatement.setDouble(3, inyeccion.getDosis());
+            preparedStatement.setObject(4, inyeccion.getHoraInyeccion());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e){
+            throw new DataBaseException("Error de conexión al registrar la inyección", e);
         }
+    }
 
+    public void insertInyeccionIncidencia(Inyeccion inyeccion) throws DataBaseException{
+        connection = DBConnection.getConnection();
+        String insertIny = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?);",
+                DBSchem.TAB_INYECCION, DBSchem.COL_INY_PLUMA, DBSchem.COL_ZONA_ID,
+                DBSchem.COL_INY_DOSIS, DBSchem.COL_INY_FECHA);
+
+        String insertIncidencia = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?);",
+                DBSchem.TAB_INCIDENCIA, DBSchem.COL_INC_INY, DBSchem.COL_INC_TIPO);
+
+        try {
+            connection.setAutoCommit(false);
+            // En primer lugar la inyección recuperando el id que necesito para inserta la incidencia, de haberla
+            preparedStatement = connection.prepareStatement(insertIny, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1,inyeccion.getPlumaInsulina().getIdPluma());
+            preparedStatement.setInt(2, inyeccion.getZona().getIdZona());
+            preparedStatement.setDouble(3,inyeccion.getDosis());
+            preparedStatement.setObject(4, inyeccion.getHoraInyeccion());
+            preparedStatement.executeUpdate();
+            resultSet = preparedStatement.getGeneratedKeys();
+            if (resultSet.next()){
+                int idGenerada = resultSet.getInt(1);
+                inyeccion.setIdInyeccion(idGenerada);
+                //De momento la necesidad de tener el objeto completo es nula, pero prefiero hacerlo de cara a futuras funciones
+                inyeccion.getIncidencia().setIdInyeccion(idGenerada);
+            }
+            preparedStatement.close();
+
+            //Procedemos a insertar incidencia
+            preparedStatement = connection.prepareStatement(insertIncidencia);
+            preparedStatement.setInt(1, inyeccion.getIdInyeccion());
+            preparedStatement.setString(2, String.valueOf(inyeccion.getIncidencia().getTipoIncidencia()));
+            preparedStatement.executeUpdate();
+
+            connection.commit();
+
+        } catch (SQLException e) {
+            if (connection != null){
+                try {
+                    connection.rollback();
+                } catch (SQLException ex){
+                    System.err.println(ex.getMessage());
+                }
+            }
+            throw new DataBaseException("Error de conexión al registrar la inyección", e);
+        } finally {
+            if (connection != null){
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
 
     }
 
@@ -68,8 +133,7 @@ public class InyeccionDAO {
 
     /*
     Querie sin formateo (la he modificado un poco respecto al .sql ya que aquí no necesito tantos datos:
-          /*
-    Querie sin formateo:
+
         SELECT
             i.id_inyeccion, i.fecha_hora, i.dosis, i.id_zona,
             inc.id_incidencia, inc.tipo_incidencia
@@ -200,6 +264,7 @@ public class InyeccionDAO {
         return inyeccionesIncidencias;
     }
 
+
     public double getTotalDosisPorPluma(int idPluma) throws SQLException {
         connection = DBConnection.getConnection();
         String query = "SELECT SUM(dosis) FROM inyeccion WHERE id_plumaInsulina = ?";
@@ -266,26 +331,5 @@ public class InyeccionDAO {
 
     }
 
-    /*
-
-    Me ha parecido demasiado ilegible y he decidido finalmente solo poner en formato los nombres de las tablas
-    String query = String.format("""
-                SELECT i.%s, i.%s, i.%s,
-                z.%s, z.%s,
-                inc.%s, inc.%s
-                FROM %s i
-                LEFT JOIN %s inc ON i.%s = inc.%s
-                INNER JOIN zona z ON z.%s = i.%s
-                WHERE DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-                ORDER BY i.fecha_hora DESC;
-                """, DBSchem.COL_INY_ID, DBSchem.COL_INY_FECHA, DBSchem.COL_INY_DOSIS,
-                        DBSchem.COL_ZONA_ID, DBSchem.COL_ZONA_NOMBRE,
-                        DBSchem.COL_INC_ID, DBSchem.COL_INC_TIPO,
-                        DBSchem.TAB_INYECCION,
-                        DBSchem.TAB_INCIDENCIA, DBSchem.COL_INC_INY, DBSchem.COL_INY_ID,
-                        DBSchem.TAB_ZONA, DBSchem.COL_ZONA_ID, DBSchem.COL_INY_ZONA,
-                        DBSchem.COL_INY_FECHA,
-               DBSchem.COL_INY_FECHA);
-     */
 }
 

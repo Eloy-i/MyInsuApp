@@ -51,9 +51,9 @@ public class PlumaInsulinaDAO {
     }
 
     /*
-    El méto.do de registro de una pluma nueva va precedido de un UPDATE que da de baja la anterior modificando el campo
-    "activo" a false. Para evitar el fallo de que el usuario tenga dos plumas activas a la vez lo he planteado como una
-    transacción en la que primero se va a ejecutar la baja de la atenterior y posteriormente el alta de la nueva.
+    El méto.do de registro de una pluma nueva va precedido de un UPDATE que da de baja la anterior, modificando el campo
+    "activo" a false. Para prevenir el fallo de que el usuario tenga dos plumas activas a la vez lo he planteado como una
+    transacción en la que primero se procede a la baja de la atenterior pluma y posteriormente el alta de la nueva.
 
     Añado sentencias
         Update:

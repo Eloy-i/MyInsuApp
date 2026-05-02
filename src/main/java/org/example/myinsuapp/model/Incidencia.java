@@ -11,6 +11,10 @@ public class Incidencia {
         this.tipoIncidencia = tipoIncidencia;
     }
 
+    public Incidencia(TipoIncidencia tipoIncidencia){
+        this.tipoIncidencia = tipoIncidencia;
+    }
+
     public Incidencia(int idInyeccion, TipoIncidencia tipoIncidencia){
         this.idInyeccion = idInyeccion;
         this.tipoIncidencia = tipoIncidencia;

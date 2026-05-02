@@ -1,6 +1,5 @@
 package org.example.myinsuapp.service;
 
-import org.example.myinsuapp.dao.IncidenciaDAO;
 import org.example.myinsuapp.dao.InyeccionDAO;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.exceptions.ReglaInyeccionException;
@@ -14,16 +13,13 @@ import java.util.List;
 public class InyeccionService {
 
     private InyeccionDAO inyeccionDAO;
-    private IncidenciaDAO incidenciaDAO;
 
     public InyeccionService(){
         this.inyeccionDAO = new InyeccionDAO();
-        this.incidenciaDAO = new IncidenciaDAO();
     }
 
     public Inyeccion ultimaInyeccion(int idUser) {
-        Inyeccion inyeccion = inyeccionDAO.getUltimaInyeccion(idUser);
-        return inyeccion;
+        return inyeccionDAO.getUltimaInyeccion(idUser);
     }
 
     public double getUnidadesUsadasPluma(PlumaInsulina pluma) {
@@ -46,37 +42,53 @@ public class InyeccionService {
     }
 
     public void registrarInyeccion (PlumaInsulina pluma, Zona zona, double dosis,
-                                         TipoIncidencia enumIncidencia) throws SQLException {
+                                         TipoIncidencia enumIncidencia) throws DataBaseException {
+        //Primero valido (aunque en controller ya lo tenga delimitado).
         validarInyeccion(pluma, dosis);
-
-        Inyeccion inyeccion = new Inyeccion(pluma, zona, dosis,
-                LocalDateTime.now());
-        inyeccionDAO.insertInyeccion(inyeccion);
-
+        Inyeccion inyeccion = null;
+        //Compruebo si es una inyección completa para activar la transacción o la inserción sin incidencia
         if (enumIncidencia != null){
-            Incidencia incidencia = new Incidencia(inyeccion.getIdInyeccion(), enumIncidencia);
-            incidenciaDAO.insertIncidencia(incidencia);
+            // problema mi constructor requiere el id inyeccion, cambiar constructor o mandar la Incidencia completa desde arriba?
+            Incidencia incidencia = new Incidencia(enumIncidencia);
+            inyeccion = new Inyeccion(pluma, zona, dosis, LocalDateTime.now(), incidencia);
+            inyeccionDAO.insertInyeccionIncidencia(inyeccion);
+        } else {
+            //Podría controlar con un break pero aquí prefiero el else, me parece más natural
+            inyeccion = new Inyeccion(pluma, zona, dosis, LocalDateTime.now());
 
+            inyeccionDAO.insertInyeccion(inyeccion);
         }
+
     }
 
 
-    private void validarInyeccion(PlumaInsulina pluma, double dosis){
+    private void validarInyeccion(PlumaInsulina pluma, double dosis) throws ReglaInyeccionException{
+        if (pluma == null){
+            throw new ReglaInyeccionException("Necesitas tener una pluma activa para poder registrar la inyección");
+        }
         if (dosis <= 0){
-            throw new RuntimeException("Debes registrar un número de unidades mayor a 0");
+            throw new ReglaInyeccionException("Debes registrar un número de unidades mayor a 0");
         }
         if (dosis > 30) {
-            throw new RuntimeException("Debes registrar un número de unidades inferior a 30");
+            throw new ReglaInyeccionException("Debes registrar un número de unidades inferior a 30");
         }
         if (dosis % 0.5 != 0){
-            throw new RuntimeException("La dosis debe registrarse en intervalos de 0.5 unidades");
+            throw new ReglaInyeccionException("La dosis debe registrarse en intervalos de 0.5 unidades");
         }
-        //Todo... por coherencia debería validar aquí que la zona no sea null o en FX... Pensar en ello
+
+        /*
+        No me gusta dejar código muerto pero aclaro esta... He decidido no controlar de forma tan estricta algo que el
+        usuario conoce de sobra. La app no puede saber que insulina me queda de forma mátematica, debido a la perdida
+        no contabilizada en purgas... Mi control estricto es el superior que está vinculado a la realidad física.
+        Los límites de dosis, en incrementos de 0.5 y la necesidad de tener al menos una pluma registrada para poder
+        realizar la insercción.
 
         double restante = getUnidadesRestantesPluma(pluma) - dosis;
         if (restante < 0){
-            throw new RuntimeException("Los datos indican no queda suficiente insulina, inicia una nueva pluma.");
+            throw new ReglaInyeccionException("Los datos indican no queda suficiente insulina, inicia una nueva pluma.");
         }
+
+         */
 
     }
 
