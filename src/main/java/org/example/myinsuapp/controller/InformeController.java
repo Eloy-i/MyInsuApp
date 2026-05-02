@@ -7,15 +7,18 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import org.example.myinsuapp.exceptions.DataBaseException;
+import org.example.myinsuapp.exceptions.DatosInsuficientesException;
+import org.example.myinsuapp.exceptions.ExportException;
+import org.example.myinsuapp.model.Usuario;
 import org.example.myinsuapp.model.dto.IncidenciaDTO;
 import org.example.myinsuapp.model.dto.InformeMedicoDTO;
 import org.example.myinsuapp.model.dto.ResumenInyeccionesDTO;
 import org.example.myinsuapp.model.dto.ZonaUsoDTO;
+import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InformeService;
-import org.example.myinsuapp.util.XmlExportUtil;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +26,7 @@ public class InformeController implements Initializable {
 
     private InformeService informeService;
 
-    private XmlExportUtil xmlExportUtil;
+    private InformeMedicoDTO informeMedicoDTO;
 
     ObservableList<PieChart.Data> listaQuesitos;
 
@@ -72,7 +75,6 @@ public class InformeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         instances();
         initGUI();
         actions();
@@ -80,7 +82,6 @@ public class InformeController implements Initializable {
 
     private void instances() {
         informeService = new InformeService();
-        xmlExportUtil = new XmlExportUtil();
         listaQuesitos = FXCollections.observableArrayList();
     }
 
@@ -91,10 +92,13 @@ public class InformeController implements Initializable {
     }
 
     private void actions() {
+        Usuario usuario = EstadoService.getInstance().getUsuario();
         btnCargarDatos.setOnAction(event->{
-            int dias = rangoDiasCombo.getValue();
+
             try {
-                InformeMedicoDTO informeMedicoDTO = informeService.generarInforme(dias);
+                int dias = rangoDiasCombo.getValue();
+
+                informeMedicoDTO = informeService.generarInforme(usuario, dias);
 
                 ResumenInyeccionesDTO resumen = informeMedicoDTO.getResumenInyeccionesDTO();
 
@@ -111,41 +115,63 @@ public class InformeController implements Initializable {
                 setGraficoQuesitosDos(informeMedicoDTO);
                 setGraficoBarrasDos(informeMedicoDTO);
 
+            } catch (DatosInsuficientesException e){
+                ventanaInformeNoDisponible(e.getMessage());
 
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            } catch (DataBaseException e){
+                ventanaError(e.getMessage());
             }
         });
 
         btnExportarXML.setOnAction(event->{
-            int dias = rangoDiasCombo.getValue();
+           //Para avitar dos llamadas redundantes a la bd, este botón manda el informe solo si antes se ha pedido arriba.
+            if (informeMedicoDTO != null) {
 
-            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmacion.setTitle("Confirmar exportación");
-            confirmacion.setHeaderText("Generación de informe XML");
-            confirmacion.setContentText("¿Deseas exportar los datos de los últimos " + dias + " días?");
+                Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmacion.setTitle("Confirmar exportación");
+                confirmacion.setHeaderText("Generación de informe XML");
+                confirmacion.setContentText("¿Deseas exportar los datos de los últimos " + rangoDiasCombo.getValue() + " días?");
 
-            Optional<ButtonType> respuesta = confirmacion.showAndWait();
-            if (respuesta.isPresent() && respuesta.get() == ButtonType.OK){
-                try {
-                    InformeMedicoDTO informeMedicoDTO = informeService.generarInforme(dias);
-                    xmlExportUtil.exportarXmlInforme(informeMedicoDTO);
+                Optional<ButtonType> respuesta = confirmacion.showAndWait();
+                if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
+                    try {
 
-                    // Alerta de éxito con el enlace que montamos antes
-                    Alert alertExito = new Alert(Alert.AlertType.INFORMATION);
-                    alertExito.setTitle("Informe exportado");
-                    alertExito.setHeaderText("Informe exportado con éxito");
-                    alertExito.showAndWait();
+                        informeService.exportarInforme(informeMedicoDTO);
+                        Alert alertExito = new Alert(Alert.AlertType.INFORMATION);
+                        alertExito.setTitle("Informe exportado");
+                        alertExito.setHeaderText("Informe exportado con éxito");
+                        alertExito.showAndWait();
 
 
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+
+                    } catch (ExportException e) {
+                        ventanaError(e.getMessage());
+                    }
+
                 }
-
+            } else {
+                ventanaInformeNoDisponible("Primero debes cargar los datos del informe pulsando el botón superior.");
             }
 
         });
+    }
+
+    /*
+    Viendo que he repetido exactamente las mismas líneas me los saco a un metod.o privado
+     */
+    private void ventanaError(String mensaje){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void ventanaInformeNoDisponible(String mensaje){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Informe no disponible");
+        alert.setContentText(mensaje);
+
+        alert.showAndWait();
     }
 
     private void setGraficoQuesitosDos(InformeMedicoDTO informeMedicoDTO){

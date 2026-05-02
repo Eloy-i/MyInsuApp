@@ -45,16 +45,8 @@ public class ResumenInyeccionesDTO {
         return dosisTotal;
     }
 
-    public void setDosisTotal(double dosisTotal) {
-        this.dosisTotal = dosisTotal;
-    }
-
     public double getPromedioInsulinaDia() {
         return promedioInsulinaDia;
-    }
-
-    public void setPromedioInsulinaDia(double promedioInsulinaDia) {
-        this.promedioInsulinaDia = promedioInsulinaDia;
     }
 
     public int getTotalInyecciones() {
@@ -69,24 +61,12 @@ public class ResumenInyeccionesDTO {
         return totalIncidencias;
     }
 
-    public void setTotalIncidencias(int totalIncidencias) {
-        this.totalIncidencias = totalIncidencias;
-    }
-
     public double getDosisMaxInsulina() {
         return dosisMaxInsulina;
     }
 
-    public void setDosisMaxInsulina(double dosisMaxInsulina) {
-        this.dosisMaxInsulina = dosisMaxInsulina;
-    }
-
     public double getInyeccionesPorDia() {
         return inyeccionesPorDia;
-    }
-
-    public void setInyeccionesPorDia(double inyeccionesPorDia) {
-        this.inyeccionesPorDia = inyeccionesPorDia;
     }
 
     public String getZonaMasUsada() {

@@ -18,7 +18,7 @@ public class InyeccionDAO {
     private Connection connection;
     private ResultSet resultSet;
     private PreparedStatement preparedStatement;
-    //Todo -> pendiente para futura optimización: try-with-resources era muy útil con los flujos de archivos
+    //Todo -> pendiente para futura optimización: try-with-resources era muy útil con los flujos de archivos y APIs y quiero aplicarlo aquí.
     /*
     Originalmente tenía una clase IncidenciaDAO (eliminada ya) pero después de ver en BD las transacciones la operación de
     insertar incidencia se hacía muy dependiente de la Inyeccion y me parece perfecta para una transacción.
