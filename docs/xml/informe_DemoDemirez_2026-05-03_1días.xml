@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Informe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fecha="2026-05-03" rangoDias="1" xsi:noNamespaceSchemaLocation="esquema.xsd">
+    <Paciente>
+        <Nombre>Demo Demirez</Nombre>
+        <Edad>26</Edad>
+        <TipoDiabetes>LADA</TipoDiabetes>
+    </Paciente>
+    <ResumenInyecciones>
+        <TotalInsulinaUsada>22.5</TotalInsulinaUsada>
+        <PromedioDiario>22.5</PromedioDiario>
+        <DosisMaxima>8.0</DosisMaxima>
+        <TotalInyecciones>5</TotalInyecciones>
+        <TotalIncidencias>2</TotalIncidencias>
+        <MediaInyeccionesDiarias>5.0</MediaInyeccionesDiarias>
+        <ZonaMasUsada>triceps derecho</ZonaMasUsada>
+        <ZonaMasIncidencias>muslo izquierdo</ZonaMasIncidencias>
+        <PorcentajeIncidencias>40.0</PorcentajeIncidencias>
+    </ResumenInyecciones>
+    <Zonas>
+        <Zona nombre="abdomen izquierdo" totalInyecciones="1">
+            <EventoInyeccion tipo="Sin incidencia" cantidad="1"/>
+        </Zona>
+        <Zona nombre="muslo izquierdo" totalInyecciones="1">
+            <EventoInyeccion tipo="sangrado" cantidad="1"/>
+        </Zona>
+        <Zona nombre="triceps derecho" totalInyecciones="2">
+            <EventoInyeccion tipo="bola insulina" cantidad="1"/>
+            <EventoInyeccion tipo="Sin incidencia" cantidad="1"/>
+        </Zona>
+        <Zona nombre="triceps izquierdo" totalInyecciones="1">
+            <EventoInyeccion tipo="Sin incidencia" cantidad="1"/>
+        </Zona>
+    </Zonas>
+</Informe>

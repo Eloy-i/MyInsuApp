@@ -76,7 +76,7 @@ public class MainViewController implements Initializable {
 
         if (baseDatosCaida){
             try {
-                mainBorderPane.setCenter(FXMLLoader.load(getClass().getResource("en-local-funcionaba-view.fxml")));
+                mainBorderPane.setCenter(FXMLLoader.load(getClass().getResource("/org/example/myinsuapp/en-local-funcionaba-view.fxml")));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
