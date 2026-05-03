@@ -62,8 +62,8 @@ public class InformeDAO {
     FROM inyeccion i
     INNER JOIN pluma_insulina pl
     ON i.id_plumaInsulina = pl.id_plumaInsulina
-    WHERE pl.id_usuario = ? AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-    AND i.fecha_hora <= NOW();
+    WHERE pl.id_usuario = ?
+    AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();
      */
 
     public double dosisTotalPeriodo(int idUser, int dias) throws DataBaseException {
@@ -73,12 +73,12 @@ public class InformeDAO {
                     FROM %s i
                     INNER JOIN %s pl
                     ON i.%s = pl.%s
-                    WHERE pl.%s = ? AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-                    AND i.%s <= NOW();""",
+                    WHERE pl.%s = ?
+                    AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();""",
                 DBSchem.COL_INY_DOSIS,
                 DBSchem.TAB_INYECCION, DBSchem.TAB_PLUMA,
                 DBSchem.COL_PLUMA_ID, DBSchem.COL_INY_PLUMA,
-                DBSchem.COL_PLUMA_USER, DBSchem.COL_INY_FECHA, DBSchem.COL_INY_FECHA);
+                DBSchem.COL_PLUMA_USER, DBSchem.COL_INY_FECHA);
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, idUser);
@@ -102,8 +102,7 @@ public class InformeDAO {
         INNER JOIN pluma_insulina pl
         ON i.id_plumaInsulina = pl.id_plumaInsulina
         WHERE pl.id_usuario = ?
-        AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-        AND i.fecha_hora <= NOW();
+        AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();
      */
     public double picoMaxInsulinaPeriodo(int idUsuario, int dias) throws DataBaseException {
         connection = DBConnection.getConnection();
@@ -113,13 +112,12 @@ public class InformeDAO {
                         INNER JOIN %s pl
                         ON i.%s = pl.%s
                         WHERE pl.%s = ?
-                        AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-                        AND i.%s <= NOW();""",
+                        AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();""",
                 DBSchem.COL_INY_DOSIS,
                 DBSchem.TAB_INYECCION, DBSchem.TAB_PLUMA,
                 DBSchem.COL_INY_PLUMA, DBSchem.COL_PLUMA_ID,
                 DBSchem.COL_PLUMA_USER,
-                DBSchem.COL_INY_FECHA, DBSchem.COL_INY_FECHA);
+                DBSchem.COL_INY_FECHA);
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, idUsuario);
@@ -129,7 +127,7 @@ public class InformeDAO {
                 return resultSet.getDouble(1);
             }
         } catch (SQLException e){
-            throw new DataBaseException("Error de conexión al extraer el pico máximo de insulina", e);
+            throw new DataBaseException("Error de conexión", e);
         }
 
         return 0.0;
@@ -140,8 +138,8 @@ public class InformeDAO {
     FROM inyeccion i
     INNER JOIN pluma_insulina pl
     ON i.id_plumaInsulina = pl.id_plumaInsulina
-    WHERE pl.id_usuario = 1 AND
-    DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+    WHERE pl.id_usuario = ?
+    AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();
      */
 
     public int totalInyeccionesPeriodo(int idUsuario, int dias) throws DataBaseException{
@@ -151,8 +149,8 @@ public class InformeDAO {
                     FROM %s i
                     INNER JOIN %s pl
                     ON i.%s = pl.%s
-                    WHERE pl.%s = ? AND
-                    DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY);""",
+                    WHERE pl.%s = ?
+                    AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();""",
                 DBSchem.COL_INY_DOSIS,
                 DBSchem.TAB_INYECCION, DBSchem.TAB_PLUMA,
                 DBSchem.COL_INY_PLUMA, DBSchem.COL_PLUMA_ID,
@@ -179,8 +177,8 @@ public class InformeDAO {
         INNER JOIN inyeccion i ON i.id_inyeccion = inc.id_inyeccion
         INNER JOIN Pluma_Insulina pl
         ON i.id_plumaInsulina = pl.id_plumaInsulina
-        WHERE pl.id_usuario = 1 AND
-        DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+        WHERE pl.id_usuario = ?
+        AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();
      */
 
     public int totalIncidenciasPeriodo(int idUsuario, int dias) throws DataBaseException{
@@ -191,8 +189,8 @@ public class InformeDAO {
                 INNER JOIN %s i ON i.%s = inc.%s
                 INNER JOIN %s pl
                 ON i.%s = pl.%s
-                WHERE pl.%s = ? AND
-                DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY);""",
+                WHERE pl.%s = ?
+                AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW();""",
                 DBSchem.COL_INC_ID,
                 DBSchem.TAB_INCIDENCIA,
                 DBSchem.TAB_INYECCION, DBSchem.COL_INY_ID, DBSchem.COL_INC_INY,
@@ -221,7 +219,7 @@ public class InformeDAO {
     INNER JOIN inyeccion i ON z.id_zona = i.id_zona
     INNER JOIN pluma_insulina pl ON i.id_plumaInsulina = pl.id_plumaInsulina
     WHERE pl.id_usuario = ?
-    AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
     GROUP BY z.id_zona, z.zona_cuerpo
     ORDER BY COUNT(i.id_inyeccion) DESC
     LIMIT 1;
@@ -234,7 +232,7 @@ public class InformeDAO {
                 INNER JOIN %s i ON z.%s = i.%s
                 INNER JOIN %s pl ON i.%s = pl.%s
                 WHERE pl.%s = ?
-                AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+                AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
                 GROUP BY z.%s, z.%s
                 ORDER BY COUNT(i.%s) DESC
                 LIMIT 1;""",
@@ -269,7 +267,7 @@ public class InformeDAO {
     INNER JOIN incidencia inc ON inc.id_inyeccion = i.id_inyeccion
     INNER JOIN pluma_insulina pl ON i.id_plumaInsulina = pl.id_plumaInsulina
     WHERE pl.id_usuario = ?
-    AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
     GROUP BY z.id_zona, z.zona_cuerpo
     ORDER BY COUNT(inc.id_incidencia) DESC
     LIMIT 1;
@@ -283,7 +281,7 @@ public class InformeDAO {
                 INNER JOIN %s inc ON inc.%s = i.%s
                 INNER JOIN %s pl ON i.%s = pl.%s
                 WHERE pl.%s = ?
-                AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+                AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
                 GROUP BY z.%s, z.%s
                 ORDER BY COUNT(inc.%s) DESC
                 LIMIT 1;""",
@@ -321,7 +319,7 @@ public class InformeDAO {
         INNER JOIN inyeccion i ON i.id_zona = z.id_zona
         INNER JOIN pluma_insulina pl ON i.id_plumaInsulina = pl.id_plumaInsulina
         WHERE pl.id_usuario = ?
-        AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+        AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
         GROUP BY z.id_zona, z.zona_cuerpo
     */
     public Map<String, Integer> usoZonasPeriodo(int idUsuario, int dias) throws DataBaseException {
@@ -334,7 +332,7 @@ public class InformeDAO {
             INNER JOIN %s i ON i.%s = z.%s
             INNER JOIN %s pl ON i.%s = pl.%s
             WHERE pl.%s = ?
-            AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+            AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
             GROUP BY z.%s, z.%s;""",
                 DBSchem.COL_ZONA_NOMBRE,
                 DBSchem.COL_INY_ID,
@@ -371,7 +369,7 @@ public class InformeDAO {
         LEFT JOIN incidencia inc ON inc.id_inyeccion = i.id_inyeccion
         INNER JOIN pluma_insulina pl ON i.id_plumaInsulina = pl.id_plumaInsulina
         WHERE pl.id_usuario = 1
-          AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        AND i.fecha_hora BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
         GROUP BY z.id_zona, z.zona_cuerpo, inc.tipo_incidencia
 
         Este map va a consistir en zona_cuerpo (no repetidas key) -> map interno con [nombreIncidencia (sin incidencia si es null -> cantidad]
@@ -389,7 +387,7 @@ public class InformeDAO {
             LEFT JOIN %s inc ON inc.%s = i.%s
             INNER JOIN %s pl ON i.%s = pl.%s
             WHERE pl.%s = ?
-              AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+            AND i.%s BETWEEN DATE_SUB(NOW(), INTERVAL ? DAY) AND NOW()
             GROUP BY z.%s, z.%s, inc.%s;""",
                 DBSchem.COL_ZONA_NOMBRE,
                 DBSchem.COL_INC_TIPO,

@@ -27,7 +27,7 @@ public class InyeccionService {
             return inyeccionDAO.getTotalDosisPorPluma(pluma.getIdPluma());
         } catch (SQLException e) {
             System.err.println("Error al obtener dosis usadas: " + e.getMessage());
-            return 0.0; // Si hay fallo, asumimos que no se ha gastado nada
+            return 0.0;
         }
     }
 

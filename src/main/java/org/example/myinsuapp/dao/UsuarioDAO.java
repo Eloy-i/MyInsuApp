@@ -58,5 +58,4 @@ public class UsuarioDAO {
 
     }
 
-    // todo Si tengo tiempo a añadir una pantalla de identificación sencilla... lanzar quiery que compruebe nombre e id, por ejemplo.
 }

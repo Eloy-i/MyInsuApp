@@ -263,10 +263,20 @@ public class InyeccionDAO {
         return inyeccionesIncidencias;
     }
 
-
+    /*
+    SELECT SUM(dosis) FROM inyeccion i
+    WHERE id_plumaInsulina = ?
+    AND i.fecha_hora <= NOW()
+     */
     public double getTotalDosisPorPluma(int idPluma) throws SQLException {
         connection = DBConnection.getConnection();
-        String query = "SELECT SUM(dosis) FROM inyeccion WHERE id_plumaInsulina = ?";
+        String query = String.format("""
+                SELECT SUM(i.%s) FROM %s i
+                    WHERE %s = ?
+                    AND i.%s <= NOW();""",
+                DBSchem.COL_INY_DOSIS, DBSchem.TAB_INYECCION,
+                DBSchem.COL_PLUMA_ID,
+                DBSchem.COL_INY_FECHA);
 
         preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, idPluma);
