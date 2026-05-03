@@ -136,8 +136,17 @@ Para validar el despliegue local y el manejo de excepciones, se adjunta en la ca
 *   **Escenario 1 (Flujo normal):** Se muestra el servicio MySQL levantado en XAMPP, seguido del arranque exitoso de la aplicación y la carga correcta de la interfaz gráfica y los datos.
 *   **Escenario 2 (Tolerancia a fallos):** Se apaga intencionadamente el módulo MySQL en XAMPP para simular una caída del servidor. Al volver a arrancar la aplicación, se comprueba que el sistema captura la excepción de conexión y levanta correctamente la vista de error controlada, evitando un cierre inesperado.
 
-Adicionalmente adjunto captura del administrador de tareas de confirmando el bajo consumo de RAM y como se ajusta a lo comentado en el apartado 2.
+Adicionalmente adjunto capturas
 
+```markdown
+![Pantalla principal](docs/empleabilidad/captura_inicio.png)
+![Registro de inyecciones](docs/empleabilidad/captura_registro.png)
+![Historial](docs/empleabilidad/captura_historial.png)
+![Informe](docs/empleabilidad/captura_informe.png)
+![Grafico Uso](docs/empleabilidad/captura_grafico_1.png)
+![Gráfico de Estado](docs/empleabilidad/captura_grafico2.png)
+
+```
 
 ### 8. Esquema de funcionamiento
 

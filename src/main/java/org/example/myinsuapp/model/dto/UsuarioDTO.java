@@ -33,15 +33,9 @@ public class UsuarioDTO {
         return TipoDiabetes;
     }
 
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
-    }
 
     public void setEdad(int edad) {
         this.edad = edad;
     }
 
-    public void setTipoDiabetes(String tipoDiabetes) {
-        TipoDiabetes = tipoDiabetes;
-    }
 }

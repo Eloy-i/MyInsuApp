@@ -20,7 +20,7 @@ public class DBConnection {
 
     private static void newConnection() {
         String user = "root";
-        String pass = "";
+        String pass = "root";
         String url = "127.0.0.1";
         String port = "3306";
         String dbName = "myinsuapp";

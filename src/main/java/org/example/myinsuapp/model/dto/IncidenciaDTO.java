@@ -24,15 +24,9 @@ public class IncidenciaDTO {
         return tipoIncidencia;
     }
 
-    public void setTipoIncidencia(String tipoIncidencia) {
-        this.tipoIncidencia = tipoIncidencia;
-    }
-
     public int getCantidadTotal() {
         return cantidadTotal;
     }
 
-    public void setCantidadTotal(int cantidadTotal) {
-        this.cantidadTotal = cantidadTotal;
-    }
+
 }

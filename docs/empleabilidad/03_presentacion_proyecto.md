@@ -26,7 +26,7 @@ de insulinas, un módulo específico para el seguimiento de las lipodistrofias y
 * **Persistancia de datos:** MariaDB (SQL), asegurando un almacenamiento estructurado y bien relacionado con consultas eficientes. 
 * **Reportes:** XML, utilizado para la generación y estructuración del informe médico.
 * **Gestión de proyectos:** **Maven** para dependencias y **GitHub** para el control de versiones.
-*
+
 
 ## 5. Qué he aprendido
 

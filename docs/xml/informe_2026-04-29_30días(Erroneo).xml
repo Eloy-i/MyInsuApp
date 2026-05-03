@@ -2,7 +2,7 @@
 <Informe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fecha="202-04-29" rangoDias="30" xsi:noNamespaceSchemaLocation="esquema.xsd">
     <Paciente>
         <Nombre>Felipe Juan Froilán de Todos los Santos de Marichalar y Borbón de la Santísima Trinidad de Grecia y Dinamarca</Nombre>
-        <Edad>121</Edad>
+        <Edad>126</Edad>
         <TipoDiabetes>Ciruelo</TipoDiabetes>
     </Paciente>
     <ResumenInyecciones>
