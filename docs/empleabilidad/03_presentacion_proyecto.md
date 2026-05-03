@@ -23,11 +23,16 @@ de insulinas, un módulo específico para el seguimiento de las lipodistrofias y
 
 * **Lógica de negocio:** Java, para una arquitectura robusta y un manejo eficiente de los objetos de salud. 
 * **Interfaz gráfica:** JavaFX, centrado en mostrar de forma clara los datos y acciones del usuario.
-* **Persistancia de datos:** SQL, asegurando un almacenamiento estructurado y bien relacionado con consultas eficientes. 
+* **Persistancia de datos:** MariaDB (SQL), asegurando un almacenamiento estructurado y bien relacionado con consultas eficientes. 
 * **Reportes:** XML, utilizado para la generación y estructuración del informe médico.
+* **Gestión de proyectos:** **Maven** para dependencias y **GitHub** para el control de versiones.
+*
 
-# 5. Qué he aprendido
+## 5. Qué he aprendido
 
-**TODO** Completar esta parte cuando termine el proyecto.
+Este proyecto ha sido mi primer gran reto y me ha servido para derribar varios mitos sobre el desarrollo:
+*   **El dato como cimiento:** Aprendí que si la estructura de la base de datos no es sólida, el código de programación acaba colapsando. Diseñar el modelo relacional fue el ejercicio de lógica más importante del proceso.
+*   **La diferencia entre "escribir código" y "diseñar sistemas":** El verdadero reto no ha sido la sintaxis, sino la **arquitectura**. Entender cómo separar responsabilidades para que el proyecto sea mantenible ha sido mi mayor aprendizaje y el reto más duro.
+*   **Propósito:** Desarrollar en el sector **e-Health** me ha enseñado que la motivación cambia cuando crees en la utilidad de lo que haces. La pasión por ayudar a mejorar la calidad de vida de personas con diabetes ha sido el motor para superar muchos momentos de frustración.
 
 

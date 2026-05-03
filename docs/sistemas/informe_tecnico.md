@@ -154,4 +154,4 @@ F -->|Consultas SQL| G[(MariaDB)]
     F -->|Consultas Cruzadas| H[DTOs - Objetos de Transferencia]
     H -->|Vista Previa| B
     H -->|Persistencia Física| I[Exportador XML - /docs/xml]
-    end```
+    end

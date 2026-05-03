@@ -1,0 +1,15 @@
+# Reflexión FInal
+
+Este proyecto representa mi primer desarrollo "real" (dicho con toda humildad y sabiendo que debe de haber errores por todos lados), más allá de ejercicios o prácticas guiadas. Ha supuesto un nivel de exigencia que no imaginaba cuando empecé. No solo por la complejidad técnica, sino por todo lo que implica construir algo desde cero con un propósito claro. A medida que avanzaba, el proyecto fue creciendo en capas, obligándome a comprender mejor la estructura, la organización del código y el papel de cada módulo dentro de la estructura general.
+
+Uno de los aprendizajes más importantes ha sido asumir una de las máximas de la programación: buscar, contrastar y aprender de forma constante. He dedicado mucho a leer documentación, ver recursos formativos y resolver dudas por distintos medios. Siempre con el objetivo de entender cada decisión y cada línea de código. 
+
+Quiero agradecer la enorme labor de los profesores durante este año. Aún me resulta difícil asimilar el progreso en apenas ocho meses. Me agobiaba pensar en que no era capaz de estructurar un proyecto, entender cómo se conectan sus distintas capas o desenvolverme con soltura en un entorno de desarrollo. Vuestra guía ha sido clave tanto por la parte técnica como por la faceta humana, en este sentido especial gracias a Carlos(no trato de soltarte lisonjas a modo de peloteo), por desgracia mi trabajo no me permite ver las clases en directo pero ahí estoy cada viernes a medio día y te agradezco mucho tu labor.
+
+Compatibilizar este trabajo con una jornada partida y la formación online ha sido duro, tanto como que estoy escribiendo esto un tres de mayo a las 21:37 pensando que no llego a la meta. Ha requerido constancia, organización y aprovechar cada momento disponible. Sin embargo, la motivación ha sido el motor que me ha permitido mantener el esfuerzo. Desde que empecé a interesarme por la programación, tenía la idea de crear algo útil, algo que no se quedara solo en lo académico.
+
+Como persona con diabetes, este proyecto tiene además un significado personal. La posibilidad de desarrollar una herramienta que ayude a mejorar el control del tratamiento, facilitar el registro de las inyecciones y contribuir a prevenir problemas como la lipodistrofia (una complicación poco mencionada) ha sido una motivación constante. Poder unir una necesidad real con una solución construida por mí mismo ha sido, sin duda, la parte más gratificante de todo el proceso.
+
+En este proceso quiero dar sobre todo las gracias a Victoria, mi compañera que me animó a dar el paso de volver a estudiar y a la que doy gracias cada día por este empujón. Sin sus llamadas de FaceTime cada día a las 21:00, para sacarme de la procrastinación propia posterior a una jornada laboral, no habría podido sacar esto adelante. 
+
+Desarrollar se ha convertido en una autentica pasión y le debo este empujón vital.
