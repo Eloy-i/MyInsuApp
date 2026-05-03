@@ -23,7 +23,7 @@ public class DBConnection {
         String pass = "";
         String url = "127.0.0.1";
         String port = "3306";
-        String dbName = "myinsuapp_prueba";
+        String dbName = "myinsuapp";
         String urlJDBC = String.format("jdbc:mysql://%s:%s/%s",url,port,dbName);
 
         try {

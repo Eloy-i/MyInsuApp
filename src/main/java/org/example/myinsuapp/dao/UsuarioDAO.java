@@ -3,8 +3,8 @@ package org.example.myinsuapp.dao;
 import org.example.myinsuapp.database.DBConnection;
 import org.example.myinsuapp.database.DBSchem;
 import org.example.myinsuapp.exceptions.DataBaseException;
-import org.example.myinsuapp.model.TipoDiabetes;
-import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.model.entity.TipoDiabetes;
+import org.example.myinsuapp.model.entity.Usuario;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,7 +26,7 @@ public class UsuarioDAO {
         FROM usuario WHERE id_usuario = 1
      */
 
-    public Usuario getUsuario(){
+    public Usuario getUsuario(int idUsuario){
         Usuario user = null;
         connection = DBConnection.getConnection();
         String query = String.format("""
@@ -37,7 +37,7 @@ public class UsuarioDAO {
 
         try {
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, 1); //Fuerzo la obtención de mi usuario precargado Demo Demirez.
+            preparedStatement.setInt(1, idUsuario);
             resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()){
@@ -45,7 +45,7 @@ public class UsuarioDAO {
                 String nombre = resultSet.getString(DBSchem.COL_USER_NOMBRE);
                 String apellido = resultSet.getString(DBSchem.COL_USER_APELL);
                 String tDiabetesString = resultSet.getString(DBSchem.COL_USER_DT);
-                TipoDiabetes tDiabetes = TipoDiabetes.valueOf(tDiabetesString);
+                TipoDiabetes tDiabetes = TipoDiabetes.desdeBD(tDiabetesString);
                 LocalDate fechaNacimiento = resultSet.getDate(DBSchem.COL_USER_NACIMIENTO).toLocalDate();
                 user = new Usuario(id, nombre, apellido, tDiabetes, fechaNacimiento);
             }

@@ -62,7 +62,8 @@ public class InformeDAO {
     FROM inyeccion i
     INNER JOIN pluma_insulina pl
     ON i.id_plumaInsulina = pl.id_plumaInsulina
-    WHERE pl.id_usuario = ? AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY);
+    WHERE pl.id_usuario = ? AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+    AND i.fecha_hora <= NOW();
      */
 
     public double dosisTotalPeriodo(int idUser, int dias) throws DataBaseException {
@@ -72,11 +73,12 @@ public class InformeDAO {
                     FROM %s i
                     INNER JOIN %s pl
                     ON i.%s = pl.%s
-                    WHERE pl.%s = ? AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY);""",
+                    WHERE pl.%s = ? AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+                    AND i.%s <= NOW();""",
                 DBSchem.COL_INY_DOSIS,
                 DBSchem.TAB_INYECCION, DBSchem.TAB_PLUMA,
                 DBSchem.COL_PLUMA_ID, DBSchem.COL_INY_PLUMA,
-                DBSchem.COL_PLUMA_USER, DBSchem.COL_INY_FECHA);
+                DBSchem.COL_PLUMA_USER, DBSchem.COL_INY_FECHA, DBSchem.COL_INY_FECHA);
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, idUser);
@@ -86,7 +88,7 @@ public class InformeDAO {
                 return resultSet.getDouble(1);
             }
         } catch (SQLException e){
-            throw new DataBaseException("Error de conexión", e);
+            throw new DataBaseException("Error de conexión al calcular dosis total", e);
         }
         //En estos métodos
         return 0.0;
@@ -100,7 +102,8 @@ public class InformeDAO {
         INNER JOIN pluma_insulina pl
         ON i.id_plumaInsulina = pl.id_plumaInsulina
         WHERE pl.id_usuario = ?
-        AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY);
+        AND DATE(i.fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+        AND i.fecha_hora <= NOW();
      */
     public double picoMaxInsulinaPeriodo(int idUsuario, int dias) throws DataBaseException {
         connection = DBConnection.getConnection();
@@ -110,12 +113,13 @@ public class InformeDAO {
                         INNER JOIN %s pl
                         ON i.%s = pl.%s
                         WHERE pl.%s = ?
-                        AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY);""",
+                        AND DATE(i.%s) >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+                        AND i.%s <= NOW();""",
                 DBSchem.COL_INY_DOSIS,
                 DBSchem.TAB_INYECCION, DBSchem.TAB_PLUMA,
                 DBSchem.COL_INY_PLUMA, DBSchem.COL_PLUMA_ID,
                 DBSchem.COL_PLUMA_USER,
-                DBSchem.COL_INY_FECHA);
+                DBSchem.COL_INY_FECHA, DBSchem.COL_INY_FECHA);
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, idUsuario);
@@ -125,7 +129,7 @@ public class InformeDAO {
                 return resultSet.getDouble(1);
             }
         } catch (SQLException e){
-            throw new DataBaseException("Error de conexión", e);
+            throw new DataBaseException("Error de conexión al extraer el pico máximo de insulina", e);
         }
 
         return 0.0;

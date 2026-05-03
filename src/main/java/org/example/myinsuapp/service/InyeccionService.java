@@ -3,7 +3,7 @@ package org.example.myinsuapp.service;
 import org.example.myinsuapp.dao.InyeccionDAO;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.exceptions.ReglaInyeccionException;
-import org.example.myinsuapp.model.*;
+import org.example.myinsuapp.model.entity.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class InyeccionService {
     }
 
     public void registrarInyeccion (PlumaInsulina pluma, Zona zona, double dosis,
-                                         TipoIncidencia enumIncidencia) throws DataBaseException {
+                                    TipoIncidencia enumIncidencia) throws DataBaseException {
         //Primero valido (aunque en controller ya lo tenga delimitado).
         validarInyeccion(pluma, dosis);
         Inyeccion inyeccion = null;

@@ -3,11 +3,10 @@ package org.example.myinsuapp.service;
 import org.example.myinsuapp.dao.InformeDAO;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.exceptions.DatosInsuficientesException;
-import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.model.entity.Usuario;
 import org.example.myinsuapp.model.dto.*;
 import org.example.myinsuapp.util.XmlExportUtil;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

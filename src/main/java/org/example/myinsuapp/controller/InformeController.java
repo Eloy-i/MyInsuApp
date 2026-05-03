@@ -10,7 +10,7 @@ import javafx.scene.control.*;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.exceptions.DatosInsuficientesException;
 import org.example.myinsuapp.exceptions.ExportException;
-import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.model.entity.Usuario;
 import org.example.myinsuapp.model.dto.IncidenciaDTO;
 import org.example.myinsuapp.model.dto.InformeMedicoDTO;
 import org.example.myinsuapp.model.dto.ResumenInyeccionesDTO;

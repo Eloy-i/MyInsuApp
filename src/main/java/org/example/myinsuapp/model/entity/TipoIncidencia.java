@@ -1,4 +1,4 @@
-package org.example.myinsuapp.model;
+package org.example.myinsuapp.model.entity;
 
 public enum TipoIncidencia {
     SANGRADO("sangrado"),
@@ -20,6 +20,6 @@ public enum TipoIncidencia {
                 return tipo;
             }
         }
-        return null; // O lanzar excepción
+        return null;
     }
 }

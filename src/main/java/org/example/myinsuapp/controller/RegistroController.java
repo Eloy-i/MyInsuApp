@@ -1,26 +1,22 @@
 package org.example.myinsuapp.controller;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import org.example.myinsuapp.exceptions.DataBaseException;
-import org.example.myinsuapp.model.PlumaInsulina;
-import org.example.myinsuapp.model.TipoIncidencia;
-import org.example.myinsuapp.model.Zona;
+import org.example.myinsuapp.exceptions.ReglaInyeccionException;
+import org.example.myinsuapp.model.entity.PlumaInsulina;
+import org.example.myinsuapp.model.entity.TipoIncidencia;
+import org.example.myinsuapp.model.entity.Zona;
 import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InyeccionService;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class RegistroController implements Initializable {
-    private InyeccionService inyeccionService;
 
+    private InyeccionService inyeccionService;
 
     @FXML
     private ToggleGroup grupoZonas;
@@ -76,8 +72,6 @@ public class RegistroController implements Initializable {
         inyeccionService = new InyeccionService();
         grupoZonas = new ToggleGroup();
 
-
-
     }
 
     /*
@@ -126,6 +120,7 @@ public class RegistroController implements Initializable {
                 alert.setTitle("Seleccion de Zonas erronea");
                 alert.setContentText("Para poder proceder al registro hay que seleccionar una zona.");
                 alert.showAndWait();
+                return;
             }
             Zona zonaSeleccionada = (Zona)btnSelecionado.getUserData();
 
@@ -137,10 +132,16 @@ public class RegistroController implements Initializable {
                 alert.setTitle("Registro correcto");
                 alert.setContentText("El registro se ha realizado correctamente");
                 alert.showAndWait();
+                resetearFormulario();
             } catch (DataBaseException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error de conexión");
                 alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            } catch (ReglaInyeccionException ex){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Registro no disponible");
+                alert.setContentText(ex.getMessage());
                 alert.showAndWait();
             }
         });
@@ -155,6 +156,12 @@ public class RegistroController implements Initializable {
             }
         } );
 
+    }
+
+    private void resetearFormulario(){
+        grupoZonas.selectToggle(null);
+        incidenciaComboBox.getSelectionModel().clearSelection();
+        unidadesSpinner.getValueFactory().setValue(0.0);
     }
 
     /*

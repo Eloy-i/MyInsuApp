@@ -4,8 +4,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import org.example.myinsuapp.exceptions.DataBaseException;
-import org.example.myinsuapp.model.Inyeccion;
-import org.example.myinsuapp.model.PlumaInsulina;
+import org.example.myinsuapp.model.entity.Inyeccion;
+import org.example.myinsuapp.model.entity.PlumaInsulina;
 import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InyeccionService;
 
@@ -57,25 +57,12 @@ public class InicioController implements Initializable {
     }
 
     public void initGUI() {
-        PlumaInsulina plumaActiva = EstadoService.getInstance().getPlumaActiva();
+
         nombreLabel.setText(EstadoService.getInstance().getUsuario().getNombre());
         tipoDTLabel.setText(EstadoService.getInstance().getUsuario().getTipoDiabetes().toString());
         ultDosisLabel.setText(ultimaInyeccionTexto());
-
-        if (plumaActiva != null) {
-            fechaLabel.setText(EstadoService.getInstance().getPlumaActiva().getFechaApertura().toString());
-
-            double udUsadas = inyeccionService.getUnidadesUsadasPluma(plumaActiva);
-            udRegistradasLabel.setText(udUsadas + " unidades");
-
-            long diasRestantes = plumaActiva.diasRestantes();
-            diasRestantesLabel.setText(diasRestantes + " días");
-
-            comportamientoProgressBar(diasRestantes);
-
-        }
-
-
+        //saco este apartado a un privado porque además de cargarlo al inicio de la ventana quiero que esta parte cargue tras darle al botón
+        actualizarEstadoPluma();
 
     }
 
@@ -90,7 +77,7 @@ public class InicioController implements Initializable {
 
                 try {
                     EstadoService.getInstance().iniciarPluma();
-                    initGUI();
+                    actualizarEstadoPluma();
                 } catch (DataBaseException e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("ERROR");
@@ -102,13 +89,30 @@ public class InicioController implements Initializable {
 
     }
 
+    private void actualizarEstadoPluma(){
+        PlumaInsulina plumaActiva = EstadoService.getInstance().getPlumaActiva();
+
+        if (plumaActiva != null) {
+            fechaLabel.setText(EstadoService.getInstance().getPlumaActiva().getFechaApertura().toString());
+
+            double udUsadas = inyeccionService.getUnidadesUsadasPluma(plumaActiva);
+            udRegistradasLabel.setText(udUsadas + " unidades");
+
+            long diasRestantes = plumaActiva.diasRestantes();
+            diasRestantesLabel.setText(diasRestantes + " días");
+
+            comportamientoProgressBar(diasRestantes);
+
+        }
+    }
+
     private void comportamientoProgressBar(long dias){
 
         double procentajeRestante = dias / 30.0;
         diasRestantesBar.setProgress(procentajeRestante);
     }
 
-    public String ultimaInyeccionTexto() {
+    private String ultimaInyeccionTexto() {
 
         Inyeccion inyeccion = inyeccionService.ultimaInyeccion(EstadoService.getInstance().getUsuario().getIdUsuario());
 

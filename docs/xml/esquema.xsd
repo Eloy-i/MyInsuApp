@@ -38,7 +38,7 @@
     <xs:complexType name="TipoResumen">
         <xs:sequence>
             <xs:element name="TotalInsulinaUsada" type="DecimalDosPuntos"/>
-            <xs:element name="PromedioInsulinaDiaria" type="DecimalDosPuntos"/>
+            <xs:element name="PromedioDiario" type="DecimalDosPuntos"/>
             <xs:element name="DosisMaxima">
                 <xs:simpleType>
                     <xs:restriction base="xs:decimal">

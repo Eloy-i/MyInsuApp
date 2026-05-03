@@ -3,8 +3,8 @@ package org.example.myinsuapp.dao;
 import org.example.myinsuapp.database.DBConnection;
 import org.example.myinsuapp.database.DBSchem;
 import org.example.myinsuapp.exceptions.DataBaseException;
-import org.example.myinsuapp.model.PlumaInsulina;
-import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.model.entity.PlumaInsulina;
+import org.example.myinsuapp.model.entity.Usuario;
 
 import java.sql.*;
 import java.time.LocalDate;

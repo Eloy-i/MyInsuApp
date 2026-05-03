@@ -9,14 +9,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.exceptions.ReglaInyeccionException;
-import org.example.myinsuapp.model.Incidencia;
-import org.example.myinsuapp.model.Inyeccion;
-import org.example.myinsuapp.model.Usuario;
+import org.example.myinsuapp.model.entity.Incidencia;
+import org.example.myinsuapp.model.entity.Inyeccion;
+import org.example.myinsuapp.model.entity.Usuario;
 import org.example.myinsuapp.service.EstadoService;
 import org.example.myinsuapp.service.InyeccionService;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;

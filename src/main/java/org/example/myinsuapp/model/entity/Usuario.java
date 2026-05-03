@@ -1,4 +1,4 @@
-package org.example.myinsuapp.model;
+package org.example.myinsuapp.model.entity;
 
 
 import java.time.LocalDate;

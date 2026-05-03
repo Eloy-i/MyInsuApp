@@ -5,9 +5,9 @@ import org.example.myinsuapp.dao.UsuarioDAO;
 import org.example.myinsuapp.dao.ZonaDAO;
 import org.example.myinsuapp.exceptions.DataBaseException;
 import org.example.myinsuapp.exceptions.MapaZonasEmptyException;
-import org.example.myinsuapp.model.PlumaInsulina;
-import org.example.myinsuapp.model.Usuario;
-import org.example.myinsuapp.model.Zona;
+import org.example.myinsuapp.model.entity.PlumaInsulina;
+import org.example.myinsuapp.model.entity.Usuario;
+import org.example.myinsuapp.model.entity.Zona;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -18,6 +18,10 @@ En memoria hay una única instancia para centralizar el acceso a datos como Usua
  */
 
 public class EstadoService {
+
+    //TODO para Borja: el ID 1 tiene datos cargados de mas de un mes, cambia al ID 2 para ver un usuario vacio.
+
+    private final int ID_USUARIO_DEMO = 1;
 
     private Map<Integer, Zona> mapaZonas;
     private Usuario usuario;
@@ -35,14 +39,18 @@ public class EstadoService {
         return instancia;
     }
 
-    //Este méto-do será cargado al inicio y se trae directamente desde la BD tanto a Usuario, como las zonas del cuerpo y la pluma que tenga el usuario activa
+    //Este méto-do será cargado al inicio y se trae directamente desde la BD tanto a Usuario, como las zonas del cuerpo y la pluma que tenga el usuario activa.
     public void cargaInicial() throws DataBaseException {
 
         ZonaDAO zonaDAO = new ZonaDAO();
         this.mapaZonas = zonaDAO.getZonas();
 
         UsuarioDAO usuarioDAO = new UsuarioDAO();
-        this.usuario = usuarioDAO.getUsuario();
+        this.usuario = usuarioDAO.getUsuario(ID_USUARIO_DEMO);
+
+        if (this.usuario == null){
+            throw new DataBaseException("No se ha encontrado en la base de datos a ningun usuario con esa ID.");
+        }
 
         PlumaInsulinaDAO plumaInsulinaDAO = new PlumaInsulinaDAO();
         this.plumaActiva = plumaInsulinaDAO.getPlumaActiva(this.usuario);

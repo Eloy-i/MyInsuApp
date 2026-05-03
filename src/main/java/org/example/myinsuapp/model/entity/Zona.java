@@ -1,4 +1,4 @@
-package org.example.myinsuapp.model;
+package org.example.myinsuapp.model.entity;
 
 public class Zona {
     private int idZona;

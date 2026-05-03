@@ -2,16 +2,15 @@ package org.example.myinsuapp.dao;
 import org.example.myinsuapp.database.DBConnection;
 import org.example.myinsuapp.database.DBSchem;
 import org.example.myinsuapp.exceptions.DataBaseException;
-import org.example.myinsuapp.model.Incidencia;
-import org.example.myinsuapp.model.Inyeccion;
-import org.example.myinsuapp.model.TipoIncidencia;
-import org.example.myinsuapp.model.Zona;
+import org.example.myinsuapp.model.entity.Incidencia;
+import org.example.myinsuapp.model.entity.Inyeccion;
+import org.example.myinsuapp.model.entity.TipoIncidencia;
+import org.example.myinsuapp.model.entity.Zona;
 import org.example.myinsuapp.service.EstadoService;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 public class InyeccionDAO {
