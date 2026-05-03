@@ -75,4 +75,7 @@ Y cambiar la línea: `private final int ID_USUARIO_DEMO = 1;` por un `2`.
 ![Informe](docs/empleabilidad/captura_informe.png)
 ![Grafico Uso](docs/empleabilidad/captura_grafico_1.png)
 ![Gráfico de Estado](docs/empleabilidad/captura_grafico2.png)
-[Ver vídeo de demostración](docs/sistemas/captura_funcionamiento_y_error.mp4)
+![Ver vídeo de demostración](docs/sistemas/captura_funcionamiento_y_error.mp4)
+
+```
+

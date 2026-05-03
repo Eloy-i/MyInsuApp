@@ -7,7 +7,7 @@
     </Paciente>
     <ResumenInyecciones>
         <TotalInsulinaUsada>238.5</TotalInsulinaUsada>
-        <PromedioInsulinaDiaria>7.95</PromedioInsulinaDiaria>
+        <PromedioDiario>7.95</PromedioDiario>
         <DosisMaxima>52.5</DosisMaxima>
         <TotalInyecciones>47</TotalInyecciones>
         <TotalIncidencias>10</TotalIncidencias>

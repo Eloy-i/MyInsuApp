@@ -2,7 +2,7 @@
 <Informe xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" fecha="206-04-29" rangoDias="30" xsi:noNamespaceSchemaLocation="esquema.xsd">
     <ResumenInyecciones>
         <TotalInsulinaUsada>238.5</TotalInsulinaUsada>
-        <PromedioInsulinaDiaria>7.95</PromedioInsulinaDiaria>
+        <PromedioDiario>7.95</PromedioDiario>
         <DosisMaxima>12.5</DosisMaxima>
         <TotalInyecciones>47</TotalInyecciones>
         <TotalIncidencias>10</TotalIncidencias>
