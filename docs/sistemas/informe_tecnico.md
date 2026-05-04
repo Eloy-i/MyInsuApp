@@ -36,8 +36,8 @@ Siendo realista con el proyecto (se ejecuta en la maquina virtual de Java y tien
 *   **Recomendada:** 8 GB. Aunque el consumo de la aplicación y la base de datos es bajo, tener 8 GB garantiza que el sistema operativo trabaje totalmente holgado, evitando cualquier tipo de lag al renderizar las pantallas o procesar las consultas SQL del historial o el informe.
 
 **Almacenamiento:**
-*   **Mínimo:** 2 GB libres en disco. Esto cubre la instalación de MariaDB, el JDK de Java 21, el código del proyecto y deja hueco para los primeros datos y logs del sistema.
-*   **Recomendado:** 5 GB o más y disco SSD para acelerar las lecturas de la base de datos, ademas de asegurar espacio suficiente para las exportaciones XML y copias de segridad del historial. 
+*   **Mínimo:** 1 GB libres en disco. Esto cubre la instalación de MariaDB, el JDK de Java 21, el código del proyecto y deja hueco para los primeros datos y logs del sistema.
+*   **Recomendado:** 2 GB y disco SSD para acelerar las lecturas de la base de datos, ademas de asegurar espacio suficiente para las exportaciones XML y copias de segridad del historial. 
 
 **Periféricos:**
 *   Teclado, ratón y un monitor con una resolución estándar (al menos 1366x768) para asegurar que las tablas de datos y la interfaz encajan en pantalla sin recortes y se ven a una resolución adecuada.
@@ -138,7 +138,7 @@ Para validar el despliegue local y el manejo de excepciones, se adjunta en la ca
 
 Adicionalmente adjunto capturas
 
-```markdown
+
 ![Pantalla principal](docs/empleabilidad/captura_inicio.png)
 ![Registro de inyecciones](docs/empleabilidad/captura_registro.png)
 ![Historial](docs/empleabilidad/captura_historial.png)
@@ -146,7 +146,6 @@ Adicionalmente adjunto capturas
 ![Grafico Uso](docs/empleabilidad/captura_grafico_1.png)
 ![Gráfico de Estado](docs/empleabilidad/captura_grafico2.png)
 
-```
 
 ### 8. Esquema de funcionamiento
 
@@ -164,3 +163,4 @@ F -->|Consultas SQL| G[(MariaDB)]
     H -->|Vista Previa| B
     H -->|Persistencia Física| I[Exportador XML - /docs/xml]
     end
+```

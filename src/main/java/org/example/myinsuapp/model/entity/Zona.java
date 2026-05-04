@@ -17,11 +17,5 @@ public class Zona {
         return zonaCuerpo;
     }
 
-    public void setIdZona(int idZona) {
-        this.idZona = idZona;
-    }
 
-    public void setZonaCuerpo(String zonaCuerpo) {
-        this.zonaCuerpo = zonaCuerpo;
-    }
 }

@@ -68,7 +68,6 @@ Y cambiar la línea: `private final int ID_USUARIO_DEMO = 1;` por un `2`.
 
 ## Capturas y video de funcionamiento
 
-```markdown
 ![Pantalla principal](docs/empleabilidad/captura_inicio.png)
 ![Registro de inyecciones](docs/empleabilidad/captura_registro.png)
 ![Historial](docs/empleabilidad/captura_historial.png)
@@ -77,5 +76,6 @@ Y cambiar la línea: `private final int ID_USUARIO_DEMO = 1;` por un `2`.
 ![Gráfico de Estado](docs/empleabilidad/captura_grafico2.png)
 ![Ver vídeo de demostración](docs/sistemas/captura_funcionamiento_y_error.mp4)
 
-```
+
+
 

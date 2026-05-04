@@ -21,7 +21,7 @@ Puedes consultar el código fuente completo, el historial de versiones y la docu
 
 ## Galería de Evidencias
 
-```markdown
+
 ![Pantalla principal](docs/empleabilidad/captura_inicio.png)
 
 ![Registro de inyecciones](docs/empleabilidad/captura_registro.png)
@@ -33,4 +33,3 @@ Puedes consultar el código fuente completo, el historial de versiones y la docu
 ![Grafico Uso](docs/empleabilidad/captura_grafico_1.png)
 
 ![Gráfico de Estado](docs/empleabilidad/captura_grafico2.png)
-```
